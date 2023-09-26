@@ -1,3 +1,7 @@
+// A TCP bi-directional proxy that can act as a fuzzer
+// Michael Howard (mikehow@microsof.com)
+// Azure Database Security
+
 #define  _WINSOCK_DEPRECATED_NO_WARNINGS 1
 
 #include <stdio.h>
@@ -6,30 +10,41 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <process.h>  
+#include <windows.h>
 
 #pragma comment(lib, "ws2_32.lib")
 
 #define BUFFER_SIZE 4096
 
+// Passes important info to the socket threads 
+// because thread APIs only support void* for args
 typedef struct {
     SOCKET src_sock;
     SOCKET dst_sock;
     int    sock_dir;    // this is the ACTUAL direction of the sockets, client->server (0), server->client (1)
     int    fuzz_dir;    // this is the requested fuzzing direction, c, s, b, n
     size_t fuzz_aggr;   // fuzzing aggressiveness
+    int    delay;
 } ConnectionData;
 
-void forward_data(_In_ ConnectionData*);
-unsigned __stdcall forward_thread(_In_ void*);
-bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
-            _Inout_						size_t* pLen,
-            _In_					    int fuzzaggr);
+void 
+    forward_data(_In_ ConnectionData*);
+
+unsigned __stdcall 
+    forward_thread(_In_  void*);
+
+bool 
+    Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
+         _Inout_						size_t* pLen,
+         _In_					        int fuzzaggr);
 
 int main(int argc, char* argv[]) {
-    WSADATA wsaData;
+
+    WSADATA wsaData{};
 
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
         fprintf(stderr, "WSAStartup failed. Error: %d\n", WSAGetLastError());
+
         return 1;
     }
 
@@ -39,7 +54,7 @@ int main(int argc, char* argv[]) {
         printf("where:\n\tlisten_port is the proxy listening port. Eg; 8088\n");
         printf("\tforward_port is the port to proxy requests to. Eg; 80\n");
         printf("\tforward_ip is the host to forward resuests to. Eg; 192.168.1.77\n");
-        printf("\tstart_delay is how long to wait before fuzzing data in msec. Eg; 100\n");
+        printf("\tstart_delay is how long to wait before fuzzing data in msec. Eg; 100 [Currently not implemented]\n");
         printf("\taggressiveness is how agressive the fuzzing should be as a percentage between 0-100. Eg; 7\n");
         printf("\tfuzz_direction determines whether to fuzz from client->server (s), server->client (c), none (n) or both (b). Eg; s\n");
 
@@ -49,14 +64,15 @@ int main(int argc, char* argv[]) {
     int     listen_port     = atoi(argv[1]);
     char*   forward_ip      = argv[2];
     int     forward_port    = atoi(argv[3]);
-    int     startdelay      = atoi(argv[4]);
+    int     startdelay      = atoi(argv[4]);    // currently unused
     int     aggressiveness  = atoi(argv[5]);
     char    direction       = tolower(argv[6][0]);
 
     if (listen_port <= 0 || listen_port >= 65535 ||
         aggressiveness < 0 || aggressiveness > 100 ||
         (direction != 'c' && direction != 's' && direction != 'n' && direction != 'b')) {
-        printf("Error in one or more args.");
+        fprintf(stderr, "Error in one or more args.");
+
         return 1;
     }
 
@@ -116,8 +132,8 @@ int main(int argc, char* argv[]) {
             continue;
         }
 
-        ConnectionData client_to_target = { client_sock, target_sock, 0, direction, aggressiveness };
-        ConnectionData target_to_client = { target_sock, client_sock, 1, direction, aggressiveness };
+        ConnectionData client_to_target = { client_sock, target_sock, 0, direction, aggressiveness, startdelay };
+        ConnectionData target_to_client = { target_sock, client_sock, 1, direction, aggressiveness, startdelay };
 
         // Create two threads to handle bidirectional forwarding
         _beginthreadex(NULL, 0, forward_thread, &client_to_target, 0, NULL);
@@ -134,6 +150,7 @@ int main(int argc, char* argv[]) {
 unsigned __stdcall forward_thread(_In_ void* data) {
     ConnectionData* connData = (ConnectionData*)data;
     forward_data(connData);
+
     return 0;
 }
 
@@ -143,10 +160,8 @@ void forward_data(_In_ ConnectionData *connData) {
     bool bFuzz = false;
 
     // fuzzing only happens in some instances
-    if (connData->fuzz_dir == 'b')
-        bFuzz = true;
-        
-    if ((connData->sock_dir == 0 && connData->fuzz_dir == 'c') || (connData->sock_dir == 1 && connData->fuzz_dir == 's'))
+    if ((connData->fuzz_dir == 'b') || 
+        (connData->sock_dir == 0 && connData->fuzz_dir == 'c') || (connData->sock_dir == 1 && connData->fuzz_dir == 's'))
         bFuzz = true;
 
     // the recv() can be from the client or the server, this code is called on one of two threads
@@ -155,11 +170,8 @@ void forward_data(_In_ ConnectionData *connData) {
         size_t bytes_sent = bytes_received;
 
         if (bFuzz)
-        {
             Fuzz(buffer, &bytes_sent, connData->fuzz_aggr);
-        }
 
-        //fprintf(stdout, "%u bytes\n", bytes_received);
         send(connData->dst_sock, buffer, bytes_received, 0);
     }
 
