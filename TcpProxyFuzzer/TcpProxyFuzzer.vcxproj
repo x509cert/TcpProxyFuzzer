@@ -129,6 +129,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Fuzz.cpp" />
+    <ClCompile Include="PseudoLoc.cpp" />
     <ClCompile Include="TcpProxyFuzzer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

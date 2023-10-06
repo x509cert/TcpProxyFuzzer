@@ -8,7 +8,7 @@
 
 constexpr size_t MIN_BUFF_LEN = 8;
 
-unsigned int GetRand() {
+static unsigned int GetRand() {
 	unsigned int rndVal;
 	while (_rdrand32_step(&rndVal) == 0);  
 	return rndVal;
@@ -119,7 +119,7 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 		// interesting characters
 		case 6:
 		{
-			const char interestingChar[] = { ':', ';', '<', '>', '\\', '/', '.' };
+			const char interestingChar[] = { ':', ';', '<', '>', '\\', '/', '.', '%', '-.','#', '@', '?', '+', '=', '|'};
 			for (j = start; j < end; j += skip) {
 				pBuf[j] = interestingChar[GetRand() % _countof(interestingChar)];
 			}

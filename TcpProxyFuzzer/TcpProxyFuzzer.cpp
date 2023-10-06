@@ -50,13 +50,13 @@ int main(int argc, char* argv[]) {
 
     if (argc != 7) {
 
-        printf("Usage: %s <listen_port> <forward_ip> <forward_port> <start_delay> <aggressiveness> <fuzz_direction>\n", argv[0]);
-        printf("where:\n\tlisten_port is the proxy listening port. Eg; 8088\n");
-        printf("\tforward_port is the port to proxy requests to. Eg; 80\n");
-        printf("\tforward_ip is the host to forward resuests to. Eg; 192.168.1.77\n");
-        printf("\tstart_delay is how long to wait before fuzzing data in msec. Eg; 100 [Currently not implemented]\n");
-        printf("\taggressiveness is how agressive the fuzzing should be as a percentage between 0-100. Eg; 7\n");
-        printf("\tfuzz_direction determines whether to fuzz from client->server (s), server->client (c), none (n) or both (b). Eg; s\n");
+        fprintf(stdout, "Usage: %s <listen_port> <forward_ip> <forward_port> <start_delay> <aggressiveness> <fuzz_direction>\n", argv[0]);
+        fprintf(stdout, "Where:\n\tlisten_port is the proxy listening port. Eg; 8088\n");
+        fprintf(stdout, "\tforward_port is the port to proxy requests to. Eg; 80\n");
+        fprintf(stdout, "\tforward_ip is the host to forward resuests to. Eg; 192.168.1.77\n");
+        fprintf(stdout, "\tstart_delay is how long to wait before fuzzing data in msec. Eg; 100 [Currently not implemented]\n");
+        fprintf(stdout, "\taggressiveness is how agressive the fuzzing should be as a percentage between 0-100. Eg; 7\n");
+        fprintf(stdout, "\tfuzz_direction determines whether to fuzz from client->server (s), server->client (c), none (n) or both (b). Eg; s\n");
 
         return 1;
     }
@@ -103,7 +103,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    printf("Proxying from port %d -> %s:%d\n", listen_port, forward_ip, forward_port);
+    fprintf(stdout, "Proxying from port %d -> %s:%d\n", listen_port, forward_ip, forward_port);
 
     while (1) {
         SOCKET client_sock = accept(server_sock, NULL, NULL);
@@ -161,8 +161,10 @@ void forward_data(_In_ ConnectionData *connData) {
 
     // fuzzing only happens in some instances
     if ((connData->fuzz_dir == 'b') || 
-        (connData->sock_dir == 0 && connData->fuzz_dir == 'c') || (connData->sock_dir == 1 && connData->fuzz_dir == 's'))
+        (connData->sock_dir == 1 && connData->fuzz_dir == 'c') || (connData->sock_dir == 0 && connData->fuzz_dir == 's'))
         bFuzz = true;
+
+    fprintf(stderr, "\n%c %d %c\t", connData->fuzz_dir, connData->sock_dir, bFuzz ? 'Y' : 'N');
 
     // the recv() can be from the client or the server, this code is called on one of two threads
     while ((bytes_received = recv(connData->src_sock, buffer, BUFFER_SIZE, 0)) > 0) {
@@ -174,8 +176,6 @@ void forward_data(_In_ ConnectionData *connData) {
 
         send(connData->dst_sock, buffer, bytes_received, 0);
     }
-
-    fprintf(stdout, "Closed\n");
 
     // Clean up the sockets once we're done forwarding
     closesocket(connData->src_sock);
