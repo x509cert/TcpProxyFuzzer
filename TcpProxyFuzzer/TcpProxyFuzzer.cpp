@@ -146,7 +146,7 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
-// this func handles both serv->client and client->server
+// this func handles both server->client and client->server
 unsigned __stdcall forward_thread(_In_ void* data) {
     ConnectionData* connData = (ConnectionData*)data;
     forward_data(connData);
