@@ -1,4 +1,6 @@
-﻿typedef struct {
+﻿#pragma warning(disable: 4566)
+
+typedef struct {
     char original;
     const char* mappings[3];
     size_t numMappings;

@@ -5,8 +5,6 @@
 #define  _WINSOCK_DEPRECATED_NO_WARNINGS 1
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <process.h>  
@@ -36,7 +34,7 @@ unsigned __stdcall
 bool 
     Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
          _Inout_						size_t* pLen,
-         _In_					        int fuzzaggr);
+         _In_					        unsigned int fuzzaggr);
 
 int main(int argc, char* argv[]) {
 
@@ -61,12 +59,12 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    int     listen_port     = atoi(argv[1]);
-    char*   forward_ip      = argv[2];
-    int     forward_port    = atoi(argv[3]);
-    int     startdelay      = atoi(argv[4]);    // currently unused
-    int     aggressiveness  = atoi(argv[5]);
-    char    direction       = tolower(argv[6][0]);
+    int             listen_port     = atoi(argv[1]);
+    char*           forward_ip      = argv[2];
+    int             forward_port    = atoi(argv[3]);
+    int             startdelay      = atoi(argv[4]);    // currently unused
+    unsigned int    aggressiveness  = atoi(argv[5]);
+    char            direction       = tolower(argv[6][0]);
 
     if (listen_port <= 0 || listen_port >= 65535 ||
         aggressiveness < 0 || aggressiveness > 100 ||
@@ -155,7 +153,7 @@ unsigned __stdcall forward_thread(_In_ void* data) {
 }
 
 void forward_data(_In_ ConnectionData *connData) {
-    char buffer[BUFFER_SIZE];
+    char buffer[BUFFER_SIZE]{};
     int bytes_received{};
     bool bFuzz = false;
 
@@ -169,12 +167,12 @@ void forward_data(_In_ ConnectionData *connData) {
     // the recv() can be from the client or the server, this code is called on one of two threads
     while ((bytes_received = recv(connData->src_sock, buffer, BUFFER_SIZE, 0)) > 0) {
         
-        size_t bytes_sent = bytes_received;
+        size_t bytes_to_send = bytes_received;
 
         if (bFuzz)
-            Fuzz(buffer, &bytes_sent, connData->fuzz_aggr);
+            Fuzz(buffer, &bytes_to_send, connData->fuzz_aggr);
 
-        send(connData->dst_sock, buffer, bytes_received, 0);
+        send(connData->dst_sock, buffer, bytes_to_send, 0);
     }
 
     // Clean up the sockets once we're done forwarding

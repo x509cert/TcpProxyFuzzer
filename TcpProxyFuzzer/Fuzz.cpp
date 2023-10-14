@@ -5,18 +5,19 @@
 #include <sal.h>
 #include <memory>
 #include <intrin.h>
+#include <cstdio>
 
 constexpr size_t MIN_BUFF_LEN = 8;
 
-static unsigned int GetRand() {
-	unsigned int rndVal;
+static unsigned int GetRand() noexcept {
+	unsigned int rndVal{};
 	while (_rdrand32_step(&rndVal) == 0);  
 	return rndVal;
 }
 
 bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 		  _Inout_						size_t* pLen,
-		  _In_							int fuzzaggr) {
+		  _In_							unsigned int fuzzaggr) noexcept {
 
 	// don't fuzz everything
 	if ((GetRand() % 100) > fuzzaggr)
@@ -58,7 +59,7 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 		const unsigned int whichMutation = GetRand() % 8;
 		unsigned int j = 0;
 
-		printf("%d", whichMutation);
+		printf("%u", whichMutation);
 
 		switch (whichMutation) {
 		// set the range to a random byte
