@@ -46,9 +46,9 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    if (argc != 7) {
+    if (argv==nullptr || argc != 7) {
 
-        fprintf(stdout, "Usage: %s <listen_port> <forward_ip> <forward_port> <start_delay> <aggressiveness> <fuzz_direction>\n", argv[0]);
+        fprintf(stdout, "Usage: TcpProxyFuzzer <listen_port> <forward_ip> <forward_port> <start_delay> <aggressiveness> <fuzz_direction>\n");
         fprintf(stdout, "Where:\n\tlisten_port is the proxy listening port. Eg; 8088\n");
         fprintf(stdout, "\tforward_port is the port to proxy requests to. Eg; 80\n");
         fprintf(stdout, "\tforward_ip is the host to forward resuests to. Eg; 192.168.1.77\n");
