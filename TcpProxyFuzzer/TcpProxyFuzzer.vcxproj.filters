@@ -25,4 +25,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="naughty.txt" />
+  </ItemGroup>
 </Project>

