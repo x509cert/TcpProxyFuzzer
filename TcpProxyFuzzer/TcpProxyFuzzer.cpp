@@ -117,7 +117,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    fprintf(stdout, "TcpProxyFuzzer " VERSION "\n");
+    fprintf(stdout, "TcpProxyFuzzer %s\n", VERSION);
     fprintf(stdout, "Proxying from port %d -> %s:%d\n", listen_port, forward_ip.c_str(), forward_port);
 
     while (true) {

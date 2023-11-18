@@ -1,3 +1,6 @@
+#ifndef RAND_H
+#define RAND_H
+
 #include <random>
 #include "gsl/util" 
 
@@ -5,7 +8,7 @@
 // uses the Mersenne Twister engine and provides various rng distributions
 class RandomNumberGenerator {
 public:
-    RandomNumberGenerator() 
+    RandomNumberGenerator()
         :   gen(rd()), 
             distUInt(0, std::numeric_limits<unsigned int>::max()),
             distPercent(0, 99), 
@@ -34,3 +37,5 @@ private:
     std::uniform_int_distribution<unsigned int> distPercent;
     std::uniform_int_distribution<unsigned int> distSmallInt;
 };
+
+#endif

@@ -8,6 +8,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+//#include <span>
 #include "rand.h"
 
 // not going to bother fuzzing a small block
@@ -43,20 +44,18 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 	}
 
 	// don't fuzz everything
-	if (rng.generatePercent() > fuzzaggr) {
+	// check for nulls
+	// check data is not too small to fuzz
+	if (rng.generatePercent() > fuzzaggr 
+		|| pBuf == nullptr 
+		|| pLen == nullptr 
+		|| *pLen < MIN_BUFF_LEN) {
 		printf("Non");
 		return false;
 	}
 
-	// check for nulls
-	if (pBuf == nullptr || pLen == nullptr) {
-		return false;
-	}
-
-	// if data is too small to fuzz, return false
-	if (*pLen < MIN_BUFF_LEN) {
-		return false;
-	}
+	// convert the incoming buffer to a std::span
+	//std::span<char> buff(pBuf, *pLen);
 
 	// get a random range to fuzz
 	size_t start{}, end{};
@@ -149,9 +148,9 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 		case 6:
 		{
 			printf("Chr");
-			const char interestingChar[] = { '~', '!', ':', ';', '<', '>', '\\', '/', '.', '%', '-','#', '@', '?', '+', '=', '|', '\n', '\r', '\t', '*', '[', ']', '{', '}', '.'};
+			const std::string interestingChar{ "~!:;\\/,.%-_`$^&#@?+=|\n\r\t*<>()[]{}" };
 			for (j = start; j < end; j += skip) {
-				pBuf[j] = interestingChar[rng.setRange(0, _countof(interestingChar)).generate()];
+				pBuf[j] = interestingChar[rng.setRange(0, interestingChar.length()).generate()];
 			}
 		}
 		break;
@@ -167,8 +166,8 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 		{
 			printf("Utf");
 			std::vector<unsigned char> overlong;
-			const int choice = rng.setRange(0,3).generate();
-			const char base_char = rng.generateSmallInt();
+			const unsigned int choice = rng.setRange(0,3).generate();
+			const char base_char = rng.generateChar();
 
 			// just to make sure we don't run off the end of the buffer
 			// max encoding len in 4, so this is a little more conservative
