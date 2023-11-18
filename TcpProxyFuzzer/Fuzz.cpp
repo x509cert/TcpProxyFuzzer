@@ -211,6 +211,12 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 		case 9: 
 			if (!naughtyStrings.empty()) {
 				printf("Nau");
+
+				const std::string& naughty = naughtyStrings.at(rng.setRange(0, naughtyStrings.size()).generate());
+				for (j = start; j < start + naughty.size(); j++) {
+					if (j < end) 
+						pBuf[j] = naughty.at(j - start);
+				}
 			}
 				break;
 

@@ -4,6 +4,7 @@
 // Last updated 11/16/2023
 
 #define  _WINSOCK_DEPRECATED_NO_WARNINGS 1
+#define VERS "1.05"
 
 #include <stdio.h>
 #include <winsock2.h>
@@ -115,7 +116,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    fprintf(stdout, "TcpProxyFuzzer v1.04\n");
+    fprintf(stdout, "TcpProxyFuzzer " VERS "\n");
     fprintf(stdout, "Proxying from port %d -> %s:%d\n", listen_port, forward_ip.c_str(), forward_port);
 
     while (true) {
