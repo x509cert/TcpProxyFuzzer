@@ -1,10 +1,10 @@
-// A TCP bi-directional proxy that can act as a fuzzer
+// A TCP bi-directional proxy that 
+// can act as a bidirectional fuzzer
 // Michael Howard (mikehow@microsoft.com)
 // Azure Database Security
-// Last updated 11/16/2023
+// Last updated 11/17/2023
 
 #define  _WINSOCK_DEPRECATED_NO_WARNINGS 1
-#define VERS "1.05"
 
 #include <stdio.h>
 #include <winsock2.h>
@@ -22,6 +22,7 @@
 
 #pragma comment(lib, "ws2_32.lib")
 
+constexpr auto VERSION = "1.05";
 constexpr size_t BUFFER_SIZE = 4096;
 
 // Passes important info to the socket threads 
@@ -116,7 +117,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    fprintf(stdout, "TcpProxyFuzzer " VERS "\n");
+    fprintf(stdout, "TcpProxyFuzzer " VERSION "\n");
     fprintf(stdout, "Proxying from port %d -> %s:%d\n", listen_port, forward_ip.c_str(), forward_port);
 
     while (true) {
