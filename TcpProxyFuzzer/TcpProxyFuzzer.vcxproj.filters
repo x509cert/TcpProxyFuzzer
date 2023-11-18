@@ -24,8 +24,46 @@
     <ClCompile Include="PseudoLoc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="rand.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="naughty.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="gsl\algorithm">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="gsl\assert">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="gsl\byte">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="gsl\gsl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="gsl\narrow">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="gsl\pointers">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="gsl\span">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="gsl\span_ext">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="gsl\string_span">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="gsl\util">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="gsl\zstring">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

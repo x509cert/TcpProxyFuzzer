@@ -10,7 +10,6 @@
 #include <ws2tcpip.h>
 #include <process.h>  
 #include <windows.h>
-#include <time.h>
 #include <vector>
 #include <string>
 #include <algorithm>
@@ -18,6 +17,7 @@
 #include <chrono>
 #include <sstream>
 #include <iomanip>
+#include "gsl/util"
 
 #pragma comment(lib, "ws2_32.lib")
 
@@ -34,6 +34,7 @@ typedef struct {
     int    delay;	    // delay in msec before fuzzing starts, UNUSED
 } ConnectionData;
 
+// forward decls
 std::string getCurrentTimeAsString();
 void forward_data(_In_ const ConnectionData*);
 unsigned __stdcall forward_thread(_In_  void*);
@@ -41,9 +42,9 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
          _Inout_						size_t* pLen,
          _In_					        unsigned int fuzzaggr);
 
+// let's ggoooo...
 int main(int argc, char* argv[]) {
 
-    srand(time(NULL));
     WSADATA wsaData{};
 
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
@@ -76,7 +77,7 @@ int main(int argc, char* argv[]) {
     const int forward_port            = std::stoi(args.at(3));
     const int startdelay              = std::stoi(args.at(4)); // currently unused
     const unsigned int aggressiveness = std::stoi(args.at(5));
-    const char direction              = std::tolower(args.at(6).at(0));
+    const char direction              = gsl::narrow_cast<const char>(std::tolower(args.at(6).at(0)));
 
     // basic error checking
     if (listen_port <= 0 || listen_port >= 65535 ||
@@ -87,7 +88,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    SOCKET server_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    const SOCKET server_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (server_sock == INVALID_SOCKET) {
         fprintf(stderr, "Socket creation failed. Error: %d\n", WSAGetLastError());
         WSACleanup();
@@ -114,17 +115,17 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    fprintf(stdout, "TcpProxyFuzzer v1.03\n");
+    fprintf(stdout, "TcpProxyFuzzer v1.04\n");
     fprintf(stdout, "Proxying from port %d -> %s:%d\n", listen_port, forward_ip.c_str(), forward_port);
 
-    while (1) {
-        SOCKET client_sock = accept(server_sock, NULL, NULL);
+    while (true) {
+        const SOCKET client_sock = accept(server_sock, NULL, NULL);
         if (client_sock == INVALID_SOCKET) {
             fprintf(stderr, "Accept failed. Error: %d\n", WSAGetLastError());
             continue;
         }
 
-        SOCKET target_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+        const SOCKET target_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
         if (target_sock == INVALID_SOCKET) {
             fprintf(stderr, "Target socket creation failed. Error: %d\n", WSAGetLastError());
             closesocket(client_sock);
@@ -205,9 +206,9 @@ void forward_data(_In_ const ConnectionData *connData) {
 #pragma warning (push)
 #pragma warning(disable : 4996)
 std::string getCurrentTimeAsString() {
-    auto currentTime = std::chrono::system_clock::now();
-    std::time_t currentTime_t = std::chrono::system_clock::to_time_t(currentTime);
-    std::tm* currentTime_tm = std::localtime(&currentTime_t);
+    const auto currentTime = std::chrono::system_clock::now();
+    const std::time_t currentTime_t = std::chrono::system_clock::to_time_t(currentTime);
+    const std::tm* currentTime_tm = std::localtime(&currentTime_t);
 
     std::ostringstream oss;
     oss << std::put_time(currentTime_tm, "%H:%M:%S");
