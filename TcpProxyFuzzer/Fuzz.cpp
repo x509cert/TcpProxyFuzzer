@@ -14,13 +14,14 @@
 // not going to bother fuzzing a small block
 constexpr size_t MIN_BUFF_LEN = 16;
 
+// some globals
 std::vector<std::string> naughtyStrings{};
 bool naughtyStringsLoadAttempted = false;
-RandomNumberGenerator rng;
+RandomNumberGenerator rng{};
 
 // this is called multiple times, usually per block of data
 bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
-		  _Inout_						size_t* pLen,
+		  _Inout_						unsigned int* pLen,
 		  _In_							unsigned int fuzzaggr) {
 
 	// on first call, load the naughty strings file
@@ -78,9 +79,11 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 	// This is where the work is done
 	for (size_t i = 0; i < iterations; i++) {
 
-		const unsigned int skip = rng.setRange(0, 10).generate() > 7 ? 1 + rng.setRange(0, 10).generate() : 1;
+		// when laying down random chars, skip event N-bytes
+		const size_t skip = rng.setRange(0, 10).generate() > 7 ? 1 + rng.setRange(0, 10).generate() : 1;
+		
+		// which mutation to use. Update the upper-range as new mutations are added
 		const unsigned int whichMutation = rng.setRange(0, 10).generate();
-		size_t j = 0;
 
 		switch (whichMutation) {
 		// set the range to a random byte
@@ -88,7 +91,7 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 		{
 			printf("Byt");
 			const char byte = rng.generateChar();
-			for (j = start; j < end; j += skip) {
+			for (size_t j = start; j < end; j += skip) {
 				buff[j] = byte;
 			}
 		}
@@ -98,7 +101,7 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 		case 1:
 		{
 			printf("Rnd");
-			for (j = start; j < end; j += skip) {
+			for (size_t j = start; j < end; j += skip) {
 				buff[j] = rng.generateChar();
 			}
 		}
@@ -107,7 +110,7 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 		// set upper bit
 		case 2:
 			printf("Sup");
-			for (j = start; j < end; j += skip) {
+			for (size_t j = start; j < end; j += skip) {
 				buff[j] |= 0x80;
 			}
 			break;
@@ -115,7 +118,7 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 		// reset upper bit
 		case 3:
 			printf("Rup");
-			for (j = start; j < end; j += skip) {
+			for (size_t j = start; j < end; j += skip) {
 				buff[j] &= 0x7F;
 			}
 			break;
@@ -124,7 +127,7 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 		case 4:
 		{
 			printf("Zer");
-			for (j = start; j < end; j += skip) {
+			for (size_t j = start; j < end; j += skip) {
 				if (buff[j] == 0) {
 					buff[j] = rng.generateChar();
 					break;
@@ -138,7 +141,7 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 		{
 			printf("Num");
 			const int interestingNum[] = { 0,1,7,8,9,15,16,17,31,32,33,63,64,65,127,128,129,191,192,193,223,224,225,239,240,241,247,248,249,253,254,255 };
-			for (j = start; j < end; j += skip) {
+			for (size_t j = start; j < end; j += skip) {
 				buff[j] = gsl::narrow_cast<char>(interestingNum[rng.setRange(0, _countof(interestingNum)).generate()]);
 			}
 		}
@@ -149,7 +152,7 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 		{
 			printf("Chr");
 			const std::string interestingChar{ "~!:;\\/,.%-_`$^&#@?+=|\n\r\t*<>()[]{}" };
-			for (j = start; j < end; j += skip) {
+			for (size_t j = start; j < end; j += skip) {
 				buff[j] = interestingChar[rng.setRange(0, interestingChar.length()).generate()];
 			}
 		}
@@ -203,7 +206,7 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 					break;
 				}
 
-				for (j = start; j < start + overlong.size(); j += skip) 
+				for (size_t j = start; j < start + overlong.size(); j++)
 					buff[j] = overlong.at(j - start);
 		}
 
@@ -215,7 +218,7 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 				printf("Nau");
 
 				const std::string& naughty = naughtyStrings.at(rng.setRange(0, naughtyStrings.size()).generate());
-				for (j = start; j < start + naughty.size(); j++) {
+				for (size_t j = start; j < start + naughty.size(); j++) {
 					if (j < end) 
 						buff[j] = naughty.at(j - start);
 				}

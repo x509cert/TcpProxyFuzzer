@@ -41,7 +41,7 @@ std::string getCurrentTimeAsString();
 void forward_data(_In_ const ConnectionData*);
 unsigned __stdcall forward_thread(_In_  void*);
 bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
-         _Inout_						size_t* pLen,
+         _Inout_						unsigned int* pLen,
          _In_					        unsigned int fuzzaggr);
 
 // let's ggoooo...
@@ -74,9 +74,9 @@ int main(int argc, char* argv[]) {
     std::vector<std::string> args(argv, argv + argc);
 
     // parse out cmd-line args
-    const int listen_port             = std::stoi(args.at(1));
+    const u_short listen_port         = gsl::narrow_cast<u_short>(std::stoi(args.at(1)));
     const std::string forward_ip      = args.at(2);
-    const int forward_port            = std::stoi(args.at(3));
+    const u_short forward_port        = gsl::narrow_cast<u_short>(std::stoi(args.at(3)));
     const int startdelay              = std::stoi(args.at(4)); // currently unused
     const unsigned int aggressiveness = std::stoi(args.at(5));
     const char direction              = gsl::narrow_cast<const char>(std::tolower(args.at(6).at(0)));
@@ -118,7 +118,7 @@ int main(int argc, char* argv[]) {
     }
 
     fprintf(stdout, "TcpProxyFuzzer %s\n", VERSION);
-    fprintf(stdout, "Proxying from port %d -> %s:%d\n", listen_port, forward_ip.c_str(), forward_port);
+    fprintf(stdout, "Proxying from port %u -> %s:%u\n", listen_port, forward_ip.c_str(), forward_port);
 
     while (true) {
         const SOCKET client_sock = accept(server_sock, NULL, NULL);
@@ -189,7 +189,7 @@ void forward_data(_In_ const ConnectionData *connData) {
     // the recv() can be from the client or the server, this code is called on one of two threads
     while ((bytes_received = recv(connData->src_sock, buffer, BUFFER_SIZE, 0)) > 0) {
         
-        size_t bytes_to_send = bytes_received;
+        unsigned int bytes_to_send = bytes_received;
 
         if (bFuzz)
             Fuzz(buffer, &bytes_to_send, connData->fuzz_aggr);
