@@ -8,8 +8,12 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include "gsl\span" // Using GSL https://github.com/microsoft/GSL/tree/main as it uses span() with boundcheck
 #include "rand.h"
+
+// Using Microsoft C++ GSL https://github.com/microsoft/GSL/tree/main as it uses span() with boundchecks
+// read this for background on why I used gsl::span() and not std::span()
+// https://github.com/microsoft/GSL/blob/main/docs/headers.md#gslspan
+#include "gsl\span" 
 
 // not going to bother fuzzing a small block
 constexpr size_t MIN_BUFF_LEN = 16;
@@ -220,7 +224,7 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 						buff[j] = naughty.at(j - start);
 				}
 			}
-				break;
+			break;
 
 		default:
 			break;
