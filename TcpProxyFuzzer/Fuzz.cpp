@@ -98,7 +98,8 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 		return false;
 	}
 
-	// convert the incoming buffer to a std::span
+	// convert the incoming buffer to a gsl::span
+	// which allows for safer buffer manipulation
 	const gsl::span<char> buff(pBuf, *pLen);
 
 	// get a random range to fuzz, but make sure it's big enough
@@ -200,7 +201,10 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 			case FuzzMutation::InterestingNumber:
 			{
 				printf("Num");
-				const int interestingNum[] = { 0,1,7,8,9,15,16,17,31,32,33,63,64,65,127,128,129,191,192,193,223,224,225,239,240,241,247,248,249,253,254,255 };
+				const int interestingNum[] 
+					= { 0,1,7,8,9,15,16,17,31,32,33,63,64,65,127,128,
+						129,191,192,193,223,224,225,239,240,241,247,248,249,253,254,255 };
+				
 				for (size_t j = start; j < end; j += skip) {
 					const auto which = rng.setRange(0, _countof(interestingNum)).generate();
 					gsl::at(buff, j) = gsl::narrow<char>(gsl::at(interestingNum, which));
@@ -315,6 +319,8 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 				break;
 		}
 
+		// right now, this only happens on truncation because we need 
+		// to re-calc buffer sizes and this is the safest way to do it
 		if (earlyExit == true)
 			break; 
 	}
