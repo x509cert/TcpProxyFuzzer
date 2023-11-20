@@ -22,7 +22,7 @@ public:
 
     // this is so you can chain calls eg; rng.setRange(0, 10).generate()
     // this creates an RNG in the range [min, max)
-    RandomNumberGenerator& setRange(unsigned int min, unsigned int max) noexcept {
+    RandomNumberGenerator& setRange(unsigned int min, unsigned int max) {
         const std::uniform_int_distribution<unsigned int>::param_type newRange(min, max - 1);
         distUInt.param(newRange);
         return *this;

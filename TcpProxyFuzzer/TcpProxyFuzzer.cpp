@@ -189,14 +189,14 @@ void forward_data(_In_ const ConnectionData *connData) {
         fprintf(stderr, "%s\t", getCurrentTimeAsString().c_str());
 
     // the recv() can be from the client or the server, this code is called on one of two threads
-    while ((bytes_received = recv(connData->src_sock, buffer, BUFFER_SIZE, 0)) > 0) {
+    while ((bytes_received = recv(connData->src_sock, static_cast<char*>(buffer), BUFFER_SIZE, 0)) > 0) {
         
         unsigned int bytes_to_send = bytes_received;
 
         if (bFuzz)
-            Fuzz(buffer, &bytes_to_send, connData->fuzz_aggr);
+            Fuzz(static_cast<char*>(buffer), &bytes_to_send, connData->fuzz_aggr);
 
-         send(connData->dst_sock, buffer, bytes_to_send, 0);
+         send(connData->dst_sock, static_cast<char*>(buffer), bytes_to_send, 0);
     }
 
     // Clean up the sockets once we're done forwarding
