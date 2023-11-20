@@ -235,7 +235,7 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 			break;
 		}
 
-		if (earlyExit = true)
+		if (earlyExit == true)
 			break; 
 	}
 
