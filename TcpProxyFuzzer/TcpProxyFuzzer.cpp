@@ -19,6 +19,7 @@
 #include <sstream>
 #include <iomanip>
 #include "gsl/util"
+#include "gsl/span"
 
 #pragma comment(lib, "ws2_32.lib")
 
@@ -28,12 +29,12 @@ constexpr size_t BUFFER_SIZE = 4096;
 // Passes important info to the socket threads 
 // because thread APIs only support void* for args
 typedef struct {
-    SOCKET src_sock;
-    SOCKET dst_sock;
-    int    sock_dir;    // this is the ACTUAL direction of the sockets, client->server (0), server->client (1)
-    int    fuzz_dir;    // this is the requested fuzzing direction, c, s, b, n
-    size_t fuzz_aggr;   // fuzzing aggressiveness
-    int    delay;	    // delay in msec before fuzzing starts, UNUSED
+    SOCKET          src_sock;
+    SOCKET          dst_sock;
+    int             sock_dir;    // this is the ACTUAL direction of the sockets, client->server (0), server->client (1)
+    int             fuzz_dir;    // this is the requested fuzzing direction, c, s, b, n
+    unsigned int    fuzz_aggr;   // fuzzing aggressiveness
+    int             delay;	     // delay in msec before fuzzing starts, UNUSED
 } ConnectionData;
 
 // forward decls
@@ -71,7 +72,8 @@ int main(int argc, char* argv[]) {
     }
 
     // move argv into a vector for easier parsing
-    std::vector<std::string> args(argv, argv + argc);
+    const gsl::span<char*> argv_span(argv, argc); 
+    std::vector<std::string> args(argv_span.begin(), argv_span.end());
 
     // parse out cmd-line args
     const u_short listen_port         = gsl::narrow_cast<u_short>(std::stoi(args.at(1)));
@@ -194,7 +196,7 @@ void forward_data(_In_ const ConnectionData *connData) {
         if (bFuzz)
             Fuzz(buffer, &bytes_to_send, connData->fuzz_aggr);
 
-        send(connData->dst_sock, buffer, bytes_to_send, 0);
+         send(connData->dst_sock, buffer, bytes_to_send, 0);
     }
 
     // Clean up the sockets once we're done forwarding

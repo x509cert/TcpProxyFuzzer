@@ -15,15 +15,15 @@ public:
             distSmallInt(0, 255) {
     }
 
-    unsigned int generate()           {   return distUInt(gen); }
-    unsigned int generatePercent()    {   return distPercent(gen); }
-    unsigned int generateSmallInt()   {   return distSmallInt(gen); }
-    unsigned char generateChar()      {   return gsl::narrow_cast<unsigned char>(distSmallInt(gen)); }
+    auto generate()           {   return distUInt(gen); }
+    auto generatePercent()    {   return distPercent(gen); }
+    auto generateSmallInt()   {   return distSmallInt(gen); }
+    auto generateChar()       {   return gsl::narrow_cast<unsigned char>(distSmallInt(gen)); }
 
     // this is so you can chain calls eg; rng.setRange(0, 10).generate()
     // this creates an RNG in the range [min, max)
     RandomNumberGenerator& setRange(unsigned int min, unsigned int max) noexcept {
-        const std::uniform_int_distribution<unsigned int>::param_type newRange(min, max-1);
+        const std::uniform_int_distribution<unsigned int>::param_type newRange(min, max - 1);
         distUInt.param(newRange);
         return *this;
     }

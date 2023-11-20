@@ -8,12 +8,35 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include "rand.h"
+#include <locale>
+#include <codecvt>
 
-// Using Microsoft C++ GSL https://github.com/microsoft/GSL/tree/main as it uses span() with boundchecks
-// read this for background on why I used gsl::span() and not std::span()
+#include "rand.h"
+#include "gsl\narrow"
+
+// Using Microsoft C++ Guidelines Support Library (GSL) 
+// https://github.com/microsoft/GSL/tree/main 
+// GSL's span() comes with bounds checking
+// Read this for background on why this code use gsl::span() and not std::span()
 // https://github.com/microsoft/GSL/blob/main/docs/headers.md#gslspan
 #include "gsl\span" 
+
+// all the possible fuzz mutation types
+enum class FuzzMutation : uint32_t {
+	None,
+	RndByteSingle,
+	RndByteMultiple,
+	SetUpperBit,
+	ResetUpperBit,
+	ZeroByteToNonZero,
+	InterestingNumber,
+	InterestingChar,
+	Truncate,
+	OverlongUtf8,
+	NaughtyWord,
+	RndUnicode,
+	Max
+};
 
 // not going to bother fuzzing a small block
 constexpr size_t MIN_BUFF_LEN = 16;
@@ -22,6 +45,22 @@ constexpr size_t MIN_BUFF_LEN = 16;
 std::vector<std::string> naughtyStrings{};
 bool naughtyStringsLoadAttempted = false;
 RandomNumberGenerator rng{};
+
+#pragma warning(push)
+#pragma warning(disable: 4996) // UTF8 encoding is deprecated, need to fix
+// function that generates a random Unicode character
+std::string getRandomUnicodeCharacter() {
+
+	auto codePoint = rng.setRange(0x0000,0xFFFF).generate();
+
+	// Avoid surrogate pair range, but recursively generate again if in surrogate pair range
+	if (codePoint >= 0xD800 && codePoint <= 0xDFFF) 
+		return getRandomUnicodeCharacter(); 
+
+	std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+	return converter.to_bytes(std::wstring(1, gsl::narrow<wchar_t>(codePoint)));
+}
+#pragma warning(pop)
 
 // this is called multiple times, usually per block of data
 bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
@@ -60,9 +99,9 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 	}
 
 	// convert the incoming buffer to a std::span
-	gsl::span<char> buff(pBuf, *pLen);
+	const gsl::span<char> buff(pBuf, *pLen);
 
-	// get a random range to fuzz
+	// get a random range to fuzz, but make sure it's big enough
 	size_t start{}, end{};
 	do {
 		start = rng.setRange(0, *pLen).generate();
@@ -72,167 +111,208 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 			start = end;
 			end = tmp;
 		}
-	} while (end - start < MIN_BUFF_LEN);
+	} while (end - start < MIN_BUFF_LEN); //TODO - double check this won't loop forever!
 
+	// if we need to leave the main fuzzing loop
 	bool earlyExit = false;
 
-	// how many loops through the fuzzer?
-	// most of the time, 10%, keep it at one iteration
-	const unsigned int iterations = rng.setRange(0,10).generate() == 7
+	// How many loops through the fuzzer?
+	// most of the time, 90%, keep it at one iteration
+	const unsigned int iterations = rng.setRange(0, 10).generate() != 7
 		? 1
-		: 1 + rng.setRange(0, 10).generate();
+		: rng.setRange(1, 10).generate();
 
 	// This is where the work is done
 	for (size_t i = 0; i < iterations; i++) {
 
-		// when laying down random chars, skip event N-bytes
-		const size_t skip = rng.setRange(0, 10).generate() > 7 ? 1 + rng.setRange(0, 10).generate() : 1;
+		// when laying down random chars, skip every N-bytes
+		// 70% of the time, skip 1
+		const size_t skip = rng.setRange(0, 10).generate() < 7
+			? 1
+			: rng.setRange(1, 10).generate();
 		
-		// which mutation to use. Update the upper-range as new mutations are added
-		const unsigned int whichMutation = rng.setRange(0, 10).generate();
+		// which mutation to use. 
+		// Update the upper-range as new mutations are added
+		const auto whichMutation = static_cast<FuzzMutation>(rng.setRange(0, static_cast<unsigned int>(FuzzMutation::Max)).generate());
 
 		switch (whichMutation) {
-		// set the range to a random byte
-		case 0:
-		{
-			printf("Byt");
-			const char byte = rng.generateChar();
-			for (size_t j = start; j < end; j += skip) {
-				gsl::at(buff,j) = byte;
-			}
-		}
-		break;
-
-		// write random bytes to the range
-		case 1:
-		{
-			printf("Rnd");
-			for (size_t j = start; j < end; j += skip) {
-				gsl::at(buff,j) = rng.generateChar();
-			}
-		}
-		break;
-
-		// set upper bit
-		case 2:
-			printf("Sup");
-			for (size_t j = start; j < end; j += skip) {
-				gsl::at(buff, j) |= 0x80;
-			}
-			break;
-
-		// reset upper bit
-		case 3:
-			printf("Rup");
-			for (size_t j = start; j < end; j += skip) {
-				gsl::at(buff, j) &= 0x7F;
-			}
-			break;
-
-		// set the first zero-byte found to non-zero
-		case 4:
-		{
-			printf("Zer");
-			for (size_t j = start; j < end; j += skip) {
-				if (gsl::at(buff, j) == 0) {
-					gsl::at(buff, j) = rng.generateChar();
-					break;
+			///////////////////////////////////////////////////////////
+			// set the range to a random byte
+			case FuzzMutation::RndByteSingle:
+			{
+				printf("Byt");
+				const char byte = rng.generateChar();
+				for (size_t j = start; j < end; j += skip) {
+					gsl::at(buff,j) = byte;
 				}
 			}
-		}
-		break;
-
-		// insert interesting edge-case numbers, often 2^n +/- 1
-		case 5:
-		{
-			printf("Num");
-			const int interestingNum[] = { 0,1,7,8,9,15,16,17,31,32,33,63,64,65,127,128,129,191,192,193,223,224,225,239,240,241,247,248,249,253,254,255 };
-			for (size_t j = start; j < end; j += skip) {
-				gsl::at(buff, j) = gsl::narrow_cast<char>(interestingNum[rng.setRange(0, _countof(interestingNum)).generate()]);
-			}
-		}
-		break;
-
-		// interesting characters
-		case 6:
-		{
-			printf("Chr");
-			const std::string interestingChar{ "~!:;\\/,.%-_`$^&#@?+=|\n\r\t*<>()[]{}" };
-			for (size_t j = start; j < end; j += skip) {
-				gsl::at(buff, j) = interestingChar[rng.setRange(0, interestingChar.length()).generate()];
-			}
-		}
-		break;
-
-		// truncate
-		case 7:
-			printf("Trn");
-			*pLen = end;
-			earlyExit = true;
 			break;
 
-		// overlong UTF-8 encodings
-		case 8: 
-		{
-			printf("Utf");
-			std::vector<unsigned char> overlong;
-			const unsigned int choice = rng.setRange(0,3).generate();
-			const char base_char = rng.generateChar();
+			///////////////////////////////////////////////////////////
+			// write random bytes to the range
+			case FuzzMutation::RndByteMultiple:
+			{
+				printf("Rnd");
+				for (size_t j = start; j < end; j += skip) {
+					gsl::at(buff,j) = rng.generateChar();
+				}
+			}
+			break;
 
-			// just to make sure we don't run off the end of the buffer
-			// max encoding len in 4, so this is a little more conservative
-			// TODO: might use int overflow checks here instead
-			if (end-start < MIN_BUFF_LEN/2)
-				start = end - MIN_BUFF_LEN/2;
+			///////////////////////////////////////////////////////////
+			// set upper bit
+			case FuzzMutation::SetUpperBit:
+			{
+				printf("Sup");
+				for (size_t j = start; j < end; j += skip) {
+					gsl::at(buff, j) |= 0x80;
+				}
+			}
+			break;
 
-			switch (choice) {
+			///////////////////////////////////////////////////////////
+			// reset upper bit
+			case FuzzMutation::ResetUpperBit:
+			{
+				printf("Rup");
+				for (size_t j = start; j < end; j += skip) {
+					gsl::at(buff, j) &= 0x7F;
+				}
+			}
+			break;
 
-				case 0:
-					// 2-byte overlong encoding
-					overlong.push_back(0b11000000 | (base_char >> 6));
-					overlong.push_back(0b10000000 | (base_char & 0b00111111));
-					break;
+			///////////////////////////////////////////////////////////
+			// set the first zero-byte found to non-zero
+			case FuzzMutation::ZeroByteToNonZero:
+			{
+				printf("Zer");
+				for (size_t j = start; j < end; j += skip) {
+					if (gsl::at(buff, j) == 0) {
+						gsl::at(buff, j) = rng.generateChar();
+						break;
+					}
+				}
+			}
+			break;
 
-				case 1:
-					// 3-byte overlong encoding
-					overlong.push_back(0b11100000);
-					overlong.push_back(0b10000000 | (base_char >> 6));
-					overlong.push_back(0b10000000 | (base_char & 0b00111111));
-					break;
+			///////////////////////////////////////////////////////////
+			// insert interesting edge-case numbers, often 2^n +/- 1
+			case FuzzMutation::InterestingNumber:
+			{
+				printf("Num");
+				const int interestingNum[] = { 0,1,7,8,9,15,16,17,31,32,33,63,64,65,127,128,129,191,192,193,223,224,225,239,240,241,247,248,249,253,254,255 };
+				for (size_t j = start; j < end; j += skip) {
+					const auto which = rng.setRange(0, _countof(interestingNum)).generate();
+					gsl::at(buff, j) = gsl::narrow<char>(gsl::at(interestingNum, which));
+				}
+			}
+			break;
 
-				case 2:
-					// 4-byte overlong encoding
-					overlong.push_back(0b11110000);
-					overlong.push_back(0b10000000 | (base_char >> 6));
-					overlong.push_back(0b10000000 | (base_char & 0b00111111));
-					overlong.push_back(0b10000000);
-					break;
+			///////////////////////////////////////////////////////////
+			// interesting characters
+			case FuzzMutation::InterestingChar:
+			{
+				printf("Chr");
+				const std::string interestingChar{ "~!:;\\/,.%-_`$^&#@?+=|\n\r\t*<>()[]{}" };
+				for (size_t j = start; j < end; j += skip) {
+					const auto which = rng.setRange(0, gsl::narrow<unsigned int>(interestingChar.length())).generate();
+					gsl::at(buff, j) = gsl::at(interestingChar,which);
+				}
+			}
+			break;
 
-				default:
-					break;
+			///////////////////////////////////////////////////////////
+			// truncate
+			case FuzzMutation::Truncate:
+			{
+				printf("Trn");
+				*pLen = gsl::narrow<unsigned int>(end);
+				earlyExit = true;
+			}
+			break;
+
+			///////////////////////////////////////////////////////////
+			// overlong UTF-8 encodings
+			case FuzzMutation::OverlongUtf8: 
+			{
+				printf("Utf");
+				std::vector<unsigned char> overlong;
+				const unsigned int choice = rng.setRange(0,3).generate();
+				const char base_char = rng.generateChar();
+
+				// just to make sure we don't run off the end of the buffer
+				// max encoding len in 4, so this is a little more conservative
+				// TODO: might use int overflow checks here instead
+				if (end-start < MIN_BUFF_LEN/2)
+					start = end - MIN_BUFF_LEN/2;
+
+				switch (choice) {
+
+					case 0:
+						// 2-byte overlong encoding
+						overlong.push_back(0b11000000 | (base_char >> 6));
+						overlong.push_back(0b10000000 | (base_char & 0b00111111));
+						break;
+
+					case 1:
+						// 3-byte overlong encoding
+						overlong.push_back(0b11100000);
+						overlong.push_back(0b10000000 | (base_char >> 6));
+						overlong.push_back(0b10000000 | (base_char & 0b00111111));
+						break;
+
+					case 2:
+						// 4-byte overlong encoding
+						overlong.push_back(0b11110000);
+						overlong.push_back(0b10000000 | (base_char >> 6));
+						overlong.push_back(0b10000000 | (base_char & 0b00111111));
+						overlong.push_back(0b10000000);
+						break;
+
+					default:
+						break;
 				}
 
 				for (size_t j = start; j < start + overlong.size(); j++)
 					gsl::at(buff, j) = overlong.at(j - start);
-		}
+			}
 
-		break;
+			break;
 
-		// insert naughty words
-		case 9: 
-			if (!naughtyStrings.empty()) {
-				printf("Nau");
+			///////////////////////////////////////////////////////////
+			// insert naughty words
+			case FuzzMutation::NaughtyWord:
+			{
+				if (!naughtyStrings.empty()) {
+					printf("Nau");
 
-				const std::string& naughty = naughtyStrings.at(rng.setRange(0, naughtyStrings.size()).generate());
-				for (size_t j = start; j < start + naughty.size(); j++) {
-					if (j < end) 
+					const std::string& naughty =
+						naughtyStrings.at(rng.setRange(0, gsl::narrow<unsigned int>(naughtyStrings.size())).generate());
+
+					for (size_t j = start; j < start + naughty.size() && j < end; j++) {
 						gsl::at(buff, j) = naughty.at(j - start);
+					}
 				}
 			}
+
 			break;
 
-		default:
+			///////////////////////////////////////////////////////////
+			// insert random Unicode (encoded as UTF-8)
+			case FuzzMutation::RndUnicode: 
+			{
+				printf("Uni");
+				auto utf8char = getRandomUnicodeCharacter();
+				for (unsigned char byte : utf8char) {
+					for (size_t j = start; j < start + utf8char.length() && j < end; j++)
+						gsl::at(buff, j) = byte;
+				}
+			}
+
 			break;
+
+			default:
+				break;
 		}
 
 		if (earlyExit == true)
