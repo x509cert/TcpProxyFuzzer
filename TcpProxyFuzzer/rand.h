@@ -11,8 +11,8 @@ public:
     RandomNumberGenerator()
         :   gen(rd()), 
             distUInt(0, std::numeric_limits<unsigned int>::max()),
-            distPercent(0, 99), 
-            distSmallInt(0, 255) {
+            distPercent(0, 100), 
+            distSmallInt(0, 256) {
     }
 
     auto generate()           {   return distUInt(gen); }
