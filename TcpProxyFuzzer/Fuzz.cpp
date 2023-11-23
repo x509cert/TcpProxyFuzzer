@@ -63,6 +63,7 @@ std::string getRandomUnicodeCharacter() {
 #pragma warning(pop)
 
 // this is called multiple times, usually per block of data
+// TODO: Add a Modern C++ version that accepts vec<uchar*>
 bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 		  _Inout_						unsigned int* pLen,
 		  _In_							unsigned int fuzzaggr) {
