@@ -203,8 +203,9 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 			{
 				printf("Num");
 				const int interestingNum[] 
-					= { 0,1,7,8,9,15,16,17,31,32,33,63,64,65,127,128,
-						129,191,192,193,223,224,225,239,240,241,247,248,249,253,254,255 };
+					= { 0,1,7,8,9,15,16,17,31,32,33,63,64,
+						65,127,128,129,191,192,193,223,224,
+						225,239,240,241,247,248,249,253,254,255 };
 				
 				for (size_t j = start; j < end; j += skip) {
 					const auto which = rng.setRange(0, _countof(interestingNum)).generate();
