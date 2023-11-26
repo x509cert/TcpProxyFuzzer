@@ -23,7 +23,7 @@
 
 #pragma comment(lib, "ws2_32.lib")
 
-constexpr auto VERSION = "1.05";
+constexpr auto VERSION = "1.09";
 constexpr size_t BUFFER_SIZE = 4096;
 
 // Passes important info to the socket threads 
@@ -178,10 +178,8 @@ void forward_data(_In_ const ConnectionData *connData) {
 
     // fuzzing only happens in some instances
     if ((connData->fuzz_dir == 'b') 
-        || 
-        (connData->sock_dir == 1 && connData->fuzz_dir == 'c') 
-        || 
-        (connData->sock_dir == 0 && connData->fuzz_dir == 's'))
+        || (connData->sock_dir == 1 && connData->fuzz_dir == 'c') 
+        || (connData->sock_dir == 0 && connData->fuzz_dir == 's'))
         bFuzz = true;
 
 
