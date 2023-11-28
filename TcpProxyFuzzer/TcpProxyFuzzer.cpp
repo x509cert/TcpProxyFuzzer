@@ -2,7 +2,7 @@
 // can act as a bidirectional fuzzer
 // Michael Howard (mikehow@microsoft.com)
 // Azure Database Security
-// Last updated 11/27/2023
+// Last updated 11/17/2023
 
 #define  _WINSOCK_DEPRECATED_NO_WARNINGS 1
 
@@ -60,13 +60,13 @@ int main(int argc, char* argv[]) {
     // TODO: Replace with real arg parsing!
     if (argv==nullptr || argc != 7) {
 
-        std::fprintf(stdout, "Usage: TcpProxyFuzzer <listen_port> <forward_ip> <forward_port> <start_delay> <aggressiveness> <fuzz_direction>\n"
-                        "Where:\n\tlisten_port is the proxy listening port. Eg; 8088\n"
-                        "\tforward_port is the port to proxy requests to. Eg; 80\n"
-                        "\tforward_ip is the host to forward resuests to. Eg; 192.168.1.77\n"
-                        "\tstart_delay is how long to wait before fuzzing data in msec. Eg; 100 [Currently ignored and not implemented]\n"
-                        "\taggressiveness is how agressive the fuzzing should be as a percentage between 0-100. Eg; 27\n"
-                        "\tfuzz_direction determines whether to fuzz from client->server (s), server->client (c), none (n) or both (b). Eg; s\n");
+        fprintf(stdout, "Usage: TcpProxyFuzzer <listen_port> <forward_ip> <forward_port> <start_delay> <aggressiveness> <fuzz_direction>\n");
+        fprintf(stdout, "Where:\n\tlisten_port is the proxy listening port. Eg; 8088\n");
+        fprintf(stdout, "\tforward_port is the port to proxy requests to. Eg; 80\n");
+        fprintf(stdout, "\tforward_ip is the host to forward resuests to. Eg; 192.168.1.77\n");
+        fprintf(stdout, "\tstart_delay is how long to wait before fuzzing data in msec. Eg; 100 [Currently ignored and not implemented]\n");
+        fprintf(stdout, "\taggressiveness is how agressive the fuzzing should be as a percentage between 0-100. Eg; 7\n");
+        fprintf(stdout, "\tfuzz_direction determines whether to fuzz from client->server (s), server->client (c), none (n) or both (b). Eg; s\n");
 
         return 1;
     }
@@ -84,17 +84,17 @@ int main(int argc, char* argv[]) {
     const char direction              = gsl::narrow_cast<const char>(std::tolower(args.at(6).at(0)));
 
     // basic error checking
-    if (listen_port <= 0 || listen_port > 65535 ||
+    if (listen_port <= 0 || listen_port >= 65535 ||
         aggressiveness < 0 || aggressiveness > 100 ||
         (direction != 'c' && direction != 's' && direction != 'n' && direction != 'b')) {
-        std::fprintf(stderr, "Error in one or more args.");
+        fprintf(stderr, "Error in one or more args.");
 
         return 1;
     }
 
     const SOCKET server_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (server_sock == INVALID_SOCKET) {
-        std::fprintf(stderr, "Socket creation failed. Error: %d\n", WSAGetLastError());
+        fprintf(stderr, "Socket creation failed. Error: %d\n", WSAGetLastError());
         WSACleanup();
         return 1;
     }
@@ -106,32 +106,32 @@ int main(int argc, char* argv[]) {
     server_addr.sin_port = htons(listen_port);
 
     if (bind(server_sock, reinterpret_cast<SOCKADDR*>(&server_addr), sizeof(server_addr)) == SOCKET_ERROR) {
-        std::fprintf(stderr, "Bind failed. Error: %d\n", WSAGetLastError());
+        fprintf(stderr, "Bind failed. Error: %d\n", WSAGetLastError());
         closesocket(server_sock);
         WSACleanup();
         return 1;
     }
 
     if (listen(server_sock, 10) == SOCKET_ERROR) {
-        std::fprintf(stderr, "Listen failed. Error: %d\n", WSAGetLastError());
+        fprintf(stderr, "Listen failed. Error: %d\n", WSAGetLastError());
         closesocket(server_sock);
         WSACleanup();
         return 1;
     }
 
-    std::fprintf(stdout, "TcpProxyFuzzer %s\n", VERSION);
-    std::fprintf(stdout, "Proxying from port %u -> %s:%u\n", listen_port, forward_ip.c_str(), forward_port);
+    fprintf(stdout, "TcpProxyFuzzer %s\n", VERSION);
+    fprintf(stdout, "Proxying from port %u -> %s:%u\n", listen_port, forward_ip.c_str(), forward_port);
 
     while (true) {
         const SOCKET client_sock = accept(server_sock, NULL, NULL);
         if (client_sock == INVALID_SOCKET) {
-            std::fprintf(stderr, "Accept failed. Error: %d\n", WSAGetLastError());
+            fprintf(stderr, "Accept failed. Error: %d\n", WSAGetLastError());
             continue;
         }
 
         const SOCKET target_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
         if (target_sock == INVALID_SOCKET) {
-            std::fprintf(stderr, "Target socket creation failed. Error: %d\n", WSAGetLastError());
+            fprintf(stderr, "Target socket creation failed. Error: %d\n", WSAGetLastError());
             closesocket(client_sock);
             continue;
         }
@@ -143,7 +143,7 @@ int main(int argc, char* argv[]) {
         target_addr.sin_port = htons(forward_port);
 
         if (connect(target_sock, reinterpret_cast<SOCKADDR*>(&target_addr), sizeof(target_addr)) == SOCKET_ERROR) {
-            std::fprintf(stderr, "Connect to target failed. Error: %d\n", WSAGetLastError());
+            fprintf(stderr, "Connect to target failed. Error: %d\n", WSAGetLastError());
             closesocket(target_sock);
             closesocket(client_sock);
             continue;
@@ -182,8 +182,9 @@ void forward_data(_In_ const ConnectionData *connData) {
         || (connData->sock_dir == 0 && connData->fuzz_dir == 's'))
         bFuzz = true;
 
+
     if (bFuzz)
-        std::fprintf(stderr, "%s\t", getCurrentTimeAsString().c_str());
+        fprintf(stderr, "%s\t", getCurrentTimeAsString().c_str());
 
     // the recv() can be from the client or the server, this code is called on one of two threads
     while ((bytes_received = recv(connData->src_sock, static_cast<char*>(buffer), BUFFER_SIZE, 0)) > 0) {
@@ -201,7 +202,7 @@ void forward_data(_In_ const ConnectionData *connData) {
     closesocket(connData->dst_sock);
 
     if (bFuzz)
-        std::fprintf(stderr, "\n");
+        fprintf(stderr, "\n");
 }
 
 #pragma warning (push)
