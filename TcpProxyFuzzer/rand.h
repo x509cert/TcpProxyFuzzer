@@ -2,26 +2,36 @@
 #define RAND_H
 
 #include <random>
-#include "gsl/util" 
+#include <limits>
+#include "gsl/util" // for gsl::narrow_cast
 
-// high-level RNG wrapper class
-// uses the Mersenne Twister engine and provides various rng distributions
 class RandomNumberGenerator {
 public:
-    RandomNumberGenerator()
-        :   gen(rd()), 
-            distUInt(0, std::numeric_limits<unsigned int>::max()),
-            distPercent(0, 100), 
-            distSmallInt(0, 256) {
+    RandomNumberGenerator() noexcept
+        : gen(nullptr), distUInt(0, std::numeric_limits<unsigned int>::max()),
+        distPercent(0, 100), distSmallInt(0, 256) {
     }
 
-    auto generate()           {   return distUInt(gen); }
-    auto generatePercent()    {   return distPercent(gen); }
-    auto generateSmallInt()   {   return distSmallInt(gen); }
-    auto generateChar()       {   return gsl::narrow_cast<unsigned char>(distSmallInt(gen)); }
+    auto generate() {
+        init(); // Ensure the generator is initialized
+        return distUInt(*gen);
+    }
 
-    // this is so you can chain calls eg; rng.setRange(0, 10).generate()
-    // this creates an RNG in the range [min, max)
+    auto generatePercent() {
+        init(); // Ensure the generator is initialized
+        return distPercent(*gen);
+    }
+
+    auto generateSmallInt() {
+        init(); // Ensure the generator is initialized
+        return distSmallInt(*gen);
+    }
+
+    auto generateChar() {
+        init(); // Ensure the generator is initialized
+        return gsl::narrow_cast<unsigned char>(distSmallInt(*gen));
+    }
+
     RandomNumberGenerator& setRange(unsigned int min, unsigned int max) {
         const std::uniform_int_distribution<unsigned int>::param_type newRange(min, max - 1);
         distUInt.param(newRange);
@@ -29,13 +39,20 @@ public:
     }
 
 private:
-    std::random_device rd;  // Used to obtain a seed for the random number engine
-    std::mt19937 gen;       // Mersenne Twister engine
+    void init() {
+        if (!gen) {
+            std::random_device rd; // Used to obtain a seed for the random number engine
+            gen = std::make_unique<std::mt19937>(rd()); // Initialize upon first use
+        }
+    }
+
+    std::unique_ptr<std::mt19937> gen; // Mersenne Twister engine, initialized lazily
 
     // Uniform integer distribution for different ranges
     std::uniform_int_distribution<unsigned int> distUInt;
     std::uniform_int_distribution<unsigned int> distPercent;
     std::uniform_int_distribution<unsigned int> distSmallInt;
 };
+
 
 #endif
