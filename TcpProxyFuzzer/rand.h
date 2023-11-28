@@ -13,22 +13,22 @@ public:
     }
 
     auto generate() {
-        init(); // Ensure the generator is initialized
+        init(); 
         return distUInt(*gen);
     }
 
     auto generatePercent() {
-        init(); // Ensure the generator is initialized
+        init(); 
         return distPercent(*gen);
     }
 
     auto generateSmallInt() {
-        init(); // Ensure the generator is initialized
+        init(); 
         return distSmallInt(*gen);
     }
 
     auto generateChar() {
-        init(); // Ensure the generator is initialized
+        init(); 
         return gsl::narrow_cast<unsigned char>(distSmallInt(*gen));
     }
 
@@ -41,12 +41,13 @@ public:
 private:
     void init() {
         if (!gen) {
-            std::random_device rd; // Used to obtain a seed for the random number engine
-            gen = std::make_unique<std::mt19937>(rd()); // Initialize upon first use
+            std::random_device rd; 
+            gen = std::make_unique<std::mt19937>(rd()); 
         }
     }
 
-    std::unique_ptr<std::mt19937> gen; // Mersenne Twister engine, initialized lazily
+    // Mersenne Twister engine, initialized lazily
+    std::unique_ptr<std::mt19937> gen; 
 
     // Uniform integer distribution for different ranges
     std::uniform_int_distribution<unsigned int> distUInt;
