@@ -23,7 +23,7 @@
 
 #pragma comment(lib, "ws2_32.lib")
 
-constexpr auto VERSION = "1.09";
+constexpr auto VERSION = "1.10";
 constexpr size_t BUFFER_SIZE = 4096;
 
 // Passes important info to the socket threads 
@@ -41,6 +41,7 @@ typedef struct {
 std::string getCurrentTimeAsString();
 void forward_data(_In_ const ConnectionData*);
 unsigned __stdcall forward_thread(_In_  void*);
+bool Fuzz(std::vector<char>& buff, unsigned int fuzzaggr);
 bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
          _Inout_						unsigned int* pLen,
          _In_					        unsigned int fuzzaggr);
