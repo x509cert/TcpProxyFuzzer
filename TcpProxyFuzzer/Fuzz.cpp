@@ -10,6 +10,7 @@
 #include <string>
 #include <locale>
 #include <codecvt>
+#include <vector>
 
 #include "rand.h"
 #include "gsl\narrow"
@@ -330,4 +331,19 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 	}
 
 	return true;
+}
+
+bool Fuzz(std::vector<char>& buff, unsigned int fuzzaggr) {
+	if (buff.empty())
+		return false;
+
+	char* pBuff = buff.data();
+	unsigned int length = static_cast<unsigned int>(buff.size());
+
+	bool result = Fuzz(pBuff, &length, fuzzaggr);
+
+	if (length != buff.size())
+		buff.resize(length);
+
+	return result;
 }
