@@ -339,9 +339,9 @@ bool Fuzz(std::vector<char>& buff, unsigned int fuzzaggr) {
 		return false;
 
 	char* pBuff = buff.data();
-	unsigned int length = static_cast<unsigned int>(buff.size());
+	unsigned int length = gsl::narrow_cast<unsigned int>(buff.size());
 
-	bool result = Fuzz(pBuff, &length, fuzzaggr);
+	const bool result = Fuzz(pBuff, &length, fuzzaggr);
 
 	if (length != buff.size())
 		buff.resize(length);
