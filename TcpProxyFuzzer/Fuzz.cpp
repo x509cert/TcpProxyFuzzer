@@ -135,7 +135,7 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 			: rng.setRange(1, 10).generate();
 		
 		// which mutation to use. 
-		// Update the upper-range as new mutations are added
+		// The upper-range is updated automatically as new mutations are added
 		const auto whichMutation = static_cast<FuzzMutation>(rng.setRange(0, static_cast<unsigned int>(FuzzMutation::Max)).generate());
 
 		switch (whichMutation) {
@@ -333,6 +333,7 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 	return true;
 }
 
+// the below is a work in progress
 bool Fuzz(std::vector<char>& buff, unsigned int fuzzaggr) {
 	if (buff.empty())
 		return false;
