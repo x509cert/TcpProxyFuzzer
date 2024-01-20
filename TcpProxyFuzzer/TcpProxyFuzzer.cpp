@@ -49,14 +49,6 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 // let's ggoooo...
 int main(int argc, char* argv[]) {
 
-    WSADATA wsaData{};
-
-    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
-        fprintf(stderr, "WSAStartup failed. Error: %d\n", WSAGetLastError());
-
-        return 1;
-    }
-
     // you must pass in all 6 args
     // TODO: Replace with real arg parsing!
     if (argv==nullptr || argc != 7) {
@@ -68,6 +60,13 @@ int main(int argc, char* argv[]) {
         fprintf(stdout, "\tstart_delay is how long to wait before fuzzing data in msec. Eg; 100 [Currently ignored and not implemented]\n");
         fprintf(stdout, "\taggressiveness is how agressive the fuzzing should be as a percentage between 0-100. Eg; 7\n");
         fprintf(stdout, "\tfuzz_direction determines whether to fuzz from client->server (s), server->client (c), none (n) or both (b). Eg; s\n");
+
+        return 1;
+    }
+
+    WSADATA wsaData{};
+    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
+        fprintf(stderr, "WSAStartup failed. Error: %d\n", WSAGetLastError());
 
         return 1;
     }
