@@ -23,7 +23,7 @@
 
 #pragma comment(lib, "ws2_32.lib")
 
-constexpr auto VERSION = "1.10";
+constexpr auto VERSION = "1.13";
 constexpr size_t BUFFER_SIZE = 4096;
 
 // Passes important info to the socket threads 
@@ -183,9 +183,11 @@ void forward_data(_In_ const ConnectionData *connData) {
         || (connData->sock_dir == 0 && connData->fuzz_dir == 's'))
         bFuzz = true;
 
+    auto time = getCurrentTimeAsString();
+    auto ctime = time.c_str();
 
     if (bFuzz)
-        fprintf(stderr, "%s\t", getCurrentTimeAsString().c_str());
+        fprintf(stderr, "%s\t", ctime);
 
     // the recv() can be from the client or the server, this code is called on one of two threads
     while ((bytes_received = recv(connData->src_sock, static_cast<char*>(buffer), BUFFER_SIZE, 0)) > 0) {
@@ -207,7 +209,7 @@ void forward_data(_In_ const ConnectionData *connData) {
 }
 
 #pragma warning (push)
-#pragma warning(disable : 4996)
+#pragma warning(disable : 4996) // localtime
 std::string getCurrentTimeAsString() {
     const auto currentTime = std::chrono::system_clock::now();
     const std::time_t currentTime_t = std::chrono::system_clock::to_time_t(currentTime);

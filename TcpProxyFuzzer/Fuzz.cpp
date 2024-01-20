@@ -27,6 +27,7 @@ enum class FuzzMutation : uint32_t {
 	None,
 	RndByteSingle,
 	RndByteMultiple,
+	ChangeASCIIInt, 
 	SetUpperBit,
 	ResetUpperBit,
 	ZeroByteToNonZero,
@@ -64,7 +65,7 @@ std::string getRandomUnicodeCharacter() {
 #pragma warning(pop)
 
 // this is called multiple times, usually per block of data
-// TODO: Add a Modern C++ version that accepts vec<uchar*>
+// TODO: Add a Modern C++ version that accepts std::vector<uchar*>
 bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 		  _Inout_						unsigned int* pLen,
 		  _In_							unsigned int fuzzaggr) {
@@ -74,6 +75,8 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 	// if the file does not exist or there's a load error
 	if (naughtyStrings.empty() && !naughtyStringsLoadAttempted) {
 		naughtyStringsLoadAttempted = true;
+
+		std::cout << "Loading naughty file" << std::endl;
 
 		std::ifstream inputFile("naughty.txt", std::ios::in | std::ios::binary);
 		if (inputFile.is_open()) {
@@ -140,6 +143,12 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 
 		switch (whichMutation) {
 			///////////////////////////////////////////////////////////
+			// no mutation
+			case FuzzMutation::None:
+				printf("Non");
+				break;
+
+			///////////////////////////////////////////////////////////
 			// set the range to a random byte
 			case FuzzMutation::RndByteSingle:
 			{
@@ -162,6 +171,25 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 			}
 			break;
 
+			///////////////////////////////////////////////////////////
+			// a variant of above
+			case FuzzMutation::ChangeASCIIInt:
+			{
+				printf("Chg");
+				for (size_t j = start; j < end; j += skip) {
+					auto c = gsl::at(buff, j);
+					switch (rng.setRange(0, 4).generate()) {
+						case 0	: c++;	break;
+						case 1	: c--;	break;
+						case 2	: c/=2; break;
+						default	: c*=2; break;
+					}
+
+					gsl::at(buff, j) = c;
+				}
+			}
+			break;
+			
 			///////////////////////////////////////////////////////////
 			// set upper bit
 			case FuzzMutation::SetUpperBit:
@@ -189,7 +217,7 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 			case FuzzMutation::ZeroByteToNonZero:
 			{
 				printf("Zer");
-				for (size_t j = start; j < end; j += skip) {
+				for (size_t j = start; j < end; j++) {
 					if (gsl::at(buff, j) == 0) {
 						gsl::at(buff, j) = rng.generateChar();
 						break;
@@ -222,7 +250,7 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 			case FuzzMutation::InterestingChar:
 			{
 				printf("Chr");
-				const std::string interestingChar{ "~!:;\\/,.%-_`$^&#@?+=|\n\r\t*<>()[]{}" };
+				const std::string interestingChar{ "~!:;\\/,.%-_`$^&#@?+=|\n\r\t\a*<>()[]{}\'\b\v\"\f" };
 				for (size_t j = start; j < end; j += skip) {
 					const auto which = rng.setRange(0, gsl::narrow<unsigned int>(interestingChar.length())).generate();
 					gsl::at(buff, j) = gsl::at(interestingChar,which);
