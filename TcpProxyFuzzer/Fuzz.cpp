@@ -53,7 +53,7 @@ RandomNumberGenerator rng{};
 // function that generates a random Unicode character
 std::string getRandomUnicodeCharacter() {
 
-	auto codePoint = rng.setRange(0x0000,0xFFFF).generate();
+	auto codePoint = rng.range(0x0000,0xFFFF).generate();
 
 	// Avoid surrogate pair range, but recursively generate again if in surrogate pair range
 	if (codePoint >= 0xD800 && codePoint <= 0xDFFF) 
@@ -110,8 +110,8 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 	// get a random range to fuzz, but make sure it's big enough
 	size_t start{}, end{};
 	do {
-		start = rng.setRange(0, *pLen).generate();
-		end = rng.setRange(0, *pLen).generate();
+		start = rng.range(0, *pLen).generate();
+		end = rng.range(0, *pLen).generate();
 		if (start > end) {
 			const size_t tmp = start;
 			start = end;
@@ -124,22 +124,22 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 
 	// How many loops through the fuzzer?
 	// most of the time, 90%, keep it at one iteration
-	const unsigned int iterations = rng.setRange(0, 10).generate() != 7
+	const unsigned int iterations = rng.range(0, 10).generate() != 7
 		? 1
-		: rng.setRange(1, 10).generate();
+		: rng.range(1, 10).generate();
 
 	// This is where the work is done
 	for (size_t i = 0; i < iterations; i++) {
 
 		// when laying down random chars, skip every N-bytes
 		// 70% of the time, skip 1
-		const size_t skip = rng.setRange(0, 10).generate() < 7
+		const size_t skip = rng.range(0, 10).generate() < 7
 			? 1
-			: rng.setRange(1, 10).generate();
+			: rng.range(1, 10).generate();
 		
 		// which mutation to use. 
 		// The upper-range is updated automatically as new mutations are added
-		const auto whichMutation = static_cast<FuzzMutation>(rng.setRange(0, static_cast<unsigned int>(FuzzMutation::Max)).generate());
+		const auto whichMutation = static_cast<FuzzMutation>(rng.range(0, static_cast<unsigned int>(FuzzMutation::Max)).generate());
 
 		switch (whichMutation) {
 			///////////////////////////////////////////////////////////
@@ -178,7 +178,7 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 				printf("Chg");
 				for (size_t j = start; j < end; j += skip) {
 					auto c = gsl::at(buff, j);
-					switch (rng.setRange(0, 4).generate()) {
+					switch (rng.range(0, 4).generate()) {
 						case 0	: c++;	break;
 						case 1	: c--;	break;
 						case 2	: c/=2; break;
@@ -238,7 +238,7 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 						254,255 };
 				
 				for (size_t j = start; j < end; j += skip) {
-					const auto which = rng.setRange(0, _countof(interestingNum)).generate();
+					const auto which = rng.range(0, _countof(interestingNum)).generate();
 					auto ch = gsl::narrow<unsigned char>(gsl::at(interestingNum, which));
 					gsl::at(buff, j) = ch;
 				}
@@ -252,7 +252,7 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 				printf("Chr");
 				const std::string interestingChar{ "~!:;\\/,.%-_`$^&#@?+=|\n\r\t\a*<>()[]{}\'\b\v\"\f" };
 				for (size_t j = start; j < end; j += skip) {
-					const auto which = rng.setRange(0, gsl::narrow<unsigned int>(interestingChar.length())).generate();
+					const auto which = rng.range(0, gsl::narrow<unsigned int>(interestingChar.length())).generate();
 					gsl::at(buff, j) = gsl::at(interestingChar,which);
 				}
 			}
@@ -274,7 +274,7 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 			{
 				printf("Utf");
 				std::vector<unsigned char> overlong;
-				const unsigned int choice = rng.setRange(0,3).generate();
+				const unsigned int choice = rng.range(0,3).generate();
 				const char base_char = rng.generateChar();
 
 				// just to make sure we don't run off the end of the buffer
@@ -324,7 +324,7 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 					printf("Nau");
 
 					const std::string& naughty =
-						naughtyStrings.at(rng.setRange(0, gsl::narrow<unsigned int>(naughtyStrings.size())).generate());
+						naughtyStrings.at(rng.range(0, gsl::narrow<unsigned int>(naughtyStrings.size())).generate());
 
 					for (size_t j = start; j < start + naughty.size() && j < end; j++) {
 						gsl::at(buff, j) = naughty.at(j - start);
