@@ -23,7 +23,7 @@
 
 #pragma comment(lib, "ws2_32.lib")
 
-constexpr auto VERSION = "1.13";
+constexpr auto VERSION = "1.15";
 constexpr size_t BUFFER_SIZE = 4096;
 
 // Passes important info to the socket threads 
@@ -187,6 +187,7 @@ void forward_data(_In_ const ConnectionData *connData) {
 
     if (bFuzz)
         fprintf(stderr, "%s\t", ctime);
+        //fprintf(stderr, "%c%s\t", bFuzz ? '*' : '!', ctime);
 
     // the recv() can be from the client or the server, this code is called on one of two threads
     while ((bytes_received = recv(connData->src_sock, static_cast<char*>(buffer), BUFFER_SIZE, 0)) > 0) {
@@ -203,7 +204,7 @@ void forward_data(_In_ const ConnectionData *connData) {
     closesocket(connData->src_sock);
     closesocket(connData->dst_sock);
 
-    if (bFuzz)
+    if (bFuzz) 
         fprintf(stderr, "\n");
 }
 
