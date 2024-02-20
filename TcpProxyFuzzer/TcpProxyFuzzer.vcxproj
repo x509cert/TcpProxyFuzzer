@@ -141,6 +141,9 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="naughty.txt" />
+    <Text Include="naughty_html.txt" />
+    <Text Include="naughty_json.txt" />
+    <Text Include="naughty_xml.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

@@ -37,6 +37,7 @@ enum class FuzzMutation : uint32_t {
 	OverlongUtf8,
 	NaughtyWord,
 	RndUnicode,
+	ReplaceInterestingChar,
 	Max
 };
 
@@ -44,8 +45,21 @@ enum class FuzzMutation : uint32_t {
 constexpr size_t MIN_BUFF_LEN = 16;
 
 // some globals
-std::vector<std::string> naughtyStrings{};
-bool naughtyStringsLoadAttempted = false;
+const std::string interestingChar{ "~!:;\\/,.%-_`$^&#@?+=|\n\r\t\a*<>()[]{}\'\b\v\"\f" };
+
+std::vector<std::string> naughty{};
+bool naughtyLoadAttempted = false;
+
+std::vector<std::string> naughtyJson{};
+bool naughtyJsonLoadAttempted = false;
+
+std::vector<std::string> naughtyHtml{};
+bool naughtyHtmlLoadAttempted = false;
+
+std::vector<std::string> naughtyXml{};
+bool naughtyXmlLoadAttempted = false;
+
+
 RandomNumberGenerator rng{};
 
 #pragma warning(push)
@@ -64,32 +78,52 @@ std::string getRandomUnicodeCharacter() {
 }
 #pragma warning(pop)
 
+// Load a file of naughty strings
+static void LoadNaughtyFile(std::string filename, std::vector<std::string>& words) {
+	std::cout << "\nLoading " << filename << "\n";
+	std::ifstream inputFile(filename, std::ios::in | std::ios::binary);
+	if (inputFile.is_open()) {
+		std::string line;
+		while (std::getline(inputFile, line)) {
+			// Check if the line is non-empty and does not start with #
+			if (!line.empty() && line.at(0) != '#') {
+				words.push_back(line);
+			}
+		}
+	}
+}
+
 // this is called multiple times, usually per block of data
 // TODO: Add a Modern C++ version that accepts std::vector<uchar*>
 bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
-		  _Inout_						unsigned int* pLen,
-		  _In_							unsigned int fuzzaggr) {
+	_Inout_						unsigned int* pLen,
+	_In_							unsigned int fuzzaggr,
+	_In_							unsigned int fuzz_type) {
 
-	// on first call, load the naughty strings file
+	// on first call, load the naughty strings file, but only if fuzz_type is not 'b'
 	// the 'attempted' flag is to prevent trying to load the file
 	// if the file does not exist or there's a load error
-	if (naughtyStrings.empty() && !naughtyStringsLoadAttempted) {
-		naughtyStringsLoadAttempted = true;
+	if (fuzz_type != 'b' && naughty.empty() && !naughtyLoadAttempted) {
+		naughtyLoadAttempted = true;
+		LoadNaughtyFile("naughty.txt", naughty);
+	}
 
-		std::cout << "Loading naughty file" << std::endl;
+	// XML Naughty Strings
+	if ((fuzz_type == 't' || fuzz_type == 'x') && naughtyXml.empty() && !naughtyXmlLoadAttempted) {
+		naughtyXmlLoadAttempted = true;
+		LoadNaughtyFile("naughtyXml.txt", naughtyXml);
+	}
 
-		std::ifstream inputFile("naughty.txt", std::ios::in | std::ios::binary);
-		if (inputFile.is_open()) {
-			std::string line;
-			while (std::getline(inputFile, line)) {
-				// Check if the line is non-empty and does not start with #
-				if (!line.empty() && line.at(0) != '#') {
-					naughtyStrings.push_back(line);
-				}
-			}
-		}
+	// HTML Naughty Strings
+	if ((fuzz_type == 't'|| fuzz_type == 'h') && naughtyHtml.empty() && !naughtyHtmlLoadAttempted) {
+		naughtyHtmlLoadAttempted = true;
+		LoadNaughtyFile("naughtyHtml.txt", naughtyHtml);
+	}
 
-		inputFile.close();
+	// JSON Naughty Strings
+	if ((fuzz_type == 't' || fuzz_type == 'j') && naughtyJson.empty() && !naughtyJsonLoadAttempted) {
+		naughtyJsonLoadAttempted = true;
+		LoadNaughtyFile("naughtyJson.txt", naughtyJson);
 	}
 
 	// don't fuzz everything
@@ -246,14 +280,31 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 			break;
 
 			///////////////////////////////////////////////////////////
-			// interesting characters
+			// insert interesting characters
 			case FuzzMutation::InterestingChar:
 			{
 				printf("Chr");
-				const std::string interestingChar{ "~!:;\\/,.%-_`$^&#@?+=|\n\r\t\a*<>()[]{}\'\b\v\"\f" };
 				for (size_t j = start; j < end; j += skip) {
 					const auto which = rng.range(0, gsl::narrow<unsigned int>(interestingChar.length())).generate();
 					gsl::at(buff, j) = gsl::at(interestingChar,which);
+				}
+			}
+			break;
+
+			///////////////////////////////////////////////////////////
+			// replace interesting characters with space
+			case FuzzMutation::ReplaceInterestingChar:
+			{
+				printf("Rep");
+				for (size_t j = start; j < end; j++) {
+					auto ch = gsl::at(buff, j);
+					if (interestingChar.find(ch) != std::string::npos) {
+						gsl::at(buff, j) = ' ';
+
+						// 50% chance to break out of the loop
+						if(rng.range(0, 10).generate() >= 5)
+							break;
+					}
 				}
 			}
 			break;
@@ -318,16 +369,17 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 
 			///////////////////////////////////////////////////////////
 			// insert naughty words
+			// but not if we're doing binary fuzzing
 			case FuzzMutation::NaughtyWord:
 			{
-				if (!naughtyStrings.empty()) {
+				if (fuzz_type != 'b' && !naughty.empty()) {
 					printf("Nau");
 
-					const std::string& naughty =
-						naughtyStrings.at(rng.range(0, gsl::narrow<unsigned int>(naughtyStrings.size())).generate());
+					const std::string& nty =
+						naughty.at(rng.range(0, gsl::narrow<unsigned int>(naughty.size())).generate());
 
-					for (size_t j = start; j < start + naughty.size() && j < end; j++) {
-						gsl::at(buff, j) = naughty.at(j - start);
+					for (size_t j = start; j < start + nty.size() && j < end; j++) {
+						gsl::at(buff, j) = nty.at(j - start);
 					}
 				}
 			}
@@ -362,14 +414,14 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 }
 
 // the below is a work in progress
-bool Fuzz(std::vector<char>& buff, unsigned int fuzzaggr) {
+bool Fuzz(std::vector<char>& buff, unsigned int fuzzaggr, unsigned int fuzz_type) {
 	if (buff.empty())
 		return false;
 
 	char* pBuff = buff.data();
 	unsigned int length = gsl::narrow_cast<unsigned int>(buff.size());
 
-	const bool result = Fuzz(pBuff, &length, fuzzaggr);
+	const bool result = Fuzz(pBuff, &length, fuzzaggr, fuzz_type);
 
 	if (length != buff.size())
 		buff.resize(length);

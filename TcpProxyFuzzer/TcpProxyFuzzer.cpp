@@ -2,7 +2,7 @@
 // can act as a bidirectional fuzzer
 // Michael Howard (mikehow@microsoft.com)
 // Azure Database Security
-// Last updated 11/17/2023
+// Last updated 2/19/2024
 
 #define  _WINSOCK_DEPRECATED_NO_WARNINGS 1
 
@@ -23,7 +23,7 @@
 
 #pragma comment(lib, "ws2_32.lib")
 
-constexpr auto VERSION = "1.15";
+constexpr auto VERSION = "1.50";
 constexpr size_t BUFFER_SIZE = 4096;
 
 // Passes important info to the socket threads 
@@ -31,32 +31,34 @@ constexpr size_t BUFFER_SIZE = 4096;
 typedef struct {
     SOCKET          src_sock;
     SOCKET          dst_sock;
-    int             sock_dir;    // this is the ACTUAL direction of the sockets, client->server (0), server->client (1)
-    int             fuzz_dir;    // this is the requested fuzzing direction, c, s, b, n
-    unsigned int    fuzz_aggr;   // fuzzing aggressiveness
-    int             delay;	     // delay in msec before fuzzing starts, UNUSED
+    int             sock_dir;    // This is the ACTUAL direction of the socket, client->server (0), server->client (1)
+    int             fuzz_dir;    // This is the requested fuzzing direction; c=server to client, s=client to server, b=both directions, n=no fuzzing
+    int 		    fuzz_type;   // Fuzzing type; b=binary, t=text, x=xml, j=json, h=http
+    unsigned int    fuzz_aggr;   // Fuzzing aggressiveness as a %
+    int             delay;	     // Delay in msec before fuzzing starts, UNUSED
 } ConnectionData;
 
 // forward decls
 std::string getCurrentTimeAsString();
 void forward_data(_In_ const ConnectionData*);
 unsigned __stdcall forward_thread(_In_  void*);
-bool Fuzz(std::vector<char>& buff, unsigned int fuzzaggr);
+bool Fuzz(std::vector<char>& buff, unsigned int fuzzaggr, unsigned int fuzz_type);
 bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
          _Inout_						unsigned int* pLen,
-         _In_					        unsigned int fuzzaggr);
+         _In_					        unsigned int fuzzaggr,
+         _In_                           unsigned int fuzz_type);
 
 // let's ggoooo...
 int main(int argc, char* argv[]) {
 
-    // you must pass in all 6 args
+    // you must pass in all 7 args
     // TODO: Replace with real arg parsing!
-    if (argv==nullptr || argc != 7) {
+    if (argv==nullptr || argc != 8) {
 
         fprintf(stdout, "Usage: TcpProxyFuzzer <listen_port> <forward_ip> <forward_port> <start_delay> <aggressiveness> <fuzz_direction>\n");
         fprintf(stdout, "Where:\n\tlisten_port is the proxy listening port. Eg; 8088\n");
-        fprintf(stdout, "\tforward_port is the port to proxy requests to. Eg; 80\n");
         fprintf(stdout, "\tforward_ip is the host to forward resuests to. Eg; 192.168.1.77\n");
+        fprintf(stdout, "\tforward_port is the port to proxy requests to. Eg; 80\n");
         fprintf(stdout, "\tstart_delay is how long to wait before fuzzing data in msec. Eg; 100 [Currently ignored and not implemented]\n");
         fprintf(stdout, "\taggressiveness is how agressive the fuzzing should be as a percentage between 0-100. Eg; 7\n");
         fprintf(stdout, "\tfuzz_direction determines whether to fuzz from client->server (s), server->client (c), none (n) or both (b). Eg; s\n");
@@ -82,11 +84,13 @@ int main(int argc, char* argv[]) {
     const int startdelay              = std::stoi(args.at(4)); // currently unused
     const unsigned int aggressiveness = std::stoi(args.at(5));
     const char direction              = gsl::narrow_cast<const char>(std::tolower(args.at(6).at(0)));
+    const char f_type                 = gsl::narrow_cast<const char>(std::tolower(args.at(7).at(0)));
 
     // basic error checking
     if (listen_port <= 0 || listen_port >= 65535 ||
         aggressiveness < 0 || aggressiveness > 100 ||
-        (direction != 'c' && direction != 's' && direction != 'n' && direction != 'b')) {
+        (direction != 'c' && direction != 's' && direction != 'n' && direction != 'b') || 
+        (f_type != 'b' && f_type != 't' && f_type != 'x' && f_type != 'j' && f_type !='h')) {
         fprintf(stderr, "Error in one or more args.");
 
         return 1;
@@ -149,8 +153,8 @@ int main(int argc, char* argv[]) {
             continue;
         }
 
-        ConnectionData client_to_target = { client_sock, target_sock, 0, direction, aggressiveness, startdelay };
-        ConnectionData target_to_client = { target_sock, client_sock, 1, direction, aggressiveness, startdelay };
+        ConnectionData client_to_target = { client_sock, target_sock, 0, direction, f_type, aggressiveness, startdelay };
+        ConnectionData target_to_client = { target_sock, client_sock, 1, direction, f_type, aggressiveness, startdelay };
 
         // Create two threads to handle bidirectional forwarding
         _beginthreadex(NULL, 0, forward_thread, &client_to_target, 0, NULL);
@@ -187,7 +191,6 @@ void forward_data(_In_ const ConnectionData *connData) {
 
     if (bFuzz)
         fprintf(stderr, "%s\t", ctime);
-        //fprintf(stderr, "%c%s\t", bFuzz ? '*' : '!', ctime);
 
     // the recv() can be from the client or the server, this code is called on one of two threads
     while ((bytes_received = recv(connData->src_sock, static_cast<char*>(buffer), BUFFER_SIZE, 0)) > 0) {
@@ -195,7 +198,7 @@ void forward_data(_In_ const ConnectionData *connData) {
         unsigned int bytes_to_send = bytes_received;
 
         if (bFuzz)
-            Fuzz(static_cast<char*>(buffer), &bytes_to_send, connData->fuzz_aggr);
+            Fuzz(static_cast<char*>(buffer), &bytes_to_send, connData->fuzz_aggr, connData->fuzz_type);
 
          send(connData->dst_sock, static_cast<char*>(buffer), bytes_to_send, 0);
     }
