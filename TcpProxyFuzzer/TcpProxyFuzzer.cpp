@@ -32,8 +32,8 @@ typedef struct {
     SOCKET          src_sock;
     SOCKET          dst_sock;
     int             sock_dir;    // This is the ACTUAL direction of the socket, client->server (0), server->client (1)
-    int             fuzz_dir;    // This is the requested fuzzing direction; c=server to client, s=client to server, b=both directions, n=no fuzzing
-    int 		    fuzz_type;   // Fuzzing type; b=binary, t=text, x=xml, j=json, h=http
+    char            fuzz_dir;    // This is the requested fuzzing direction; c=server to client, s=client to server, b=both directions, n=no fuzzing
+    char 		    fuzz_type;   // Fuzzing type; b=binary, t=text, x=xml, j=json, h=html
     unsigned int    fuzz_aggr;   // Fuzzing aggressiveness as a %
     int             delay;	     // Delay in msec before fuzzing starts, UNUSED
 } ConnectionData;
@@ -51,13 +51,16 @@ int main(int argc, char* argv[]) {
     // TODO: Replace with real arg parsing!
     if (argv==nullptr || argc != 8) {
 
-        fprintf(stdout, "Usage: TcpProxyFuzzer <listen_port> <forward_ip> <forward_port> <start_delay> <aggressiveness> <fuzz_direction>\n");
-        fprintf(stdout, "Where:\n\tlisten_port is the proxy listening port. Eg; 8088\n");
-        fprintf(stdout, "\tforward_ip is the host to forward resuests to. Eg; 192.168.1.77\n");
-        fprintf(stdout, "\tforward_port is the port to proxy requests to. Eg; 80\n");
-        fprintf(stdout, "\tstart_delay is how long to wait before fuzzing data in msec. Eg; 100 [Currently ignored and not implemented]\n");
-        fprintf(stdout, "\taggressiveness is how agressive the fuzzing should be as a percentage between 0-100. Eg; 7\n");
-        fprintf(stdout, "\tfuzz_direction determines whether to fuzz from client->server (s), server->client (c), none (n) or both (b). Eg; s\n");
+        fprintf(stdout,
+            "Usage: TcpProxyFuzzer <listen_port> <forward_ip> <forward_port> <start_delay> <aggressiveness> <fuzz_direction>\n"
+            "Where:\n"
+            "\tlisten_port is the proxy listening port.Eg; 8088\n"
+            "\tforward_ip is the host to forward resuests to. Eg; 192.168.1.77\n"
+            "\tforward_port is the port to proxy requests to. Eg; 80\n"
+            "\tstart_delay is how long to wait before fuzzing data in msec. Eg; 100 [Currently ignored and not implemented]\n"
+            "\taggressiveness is how agressive the fuzzing should be as a percentage between 0-100. Eg; 7\n"
+            "\tfuzz_direction determines whether to fuzz from client->server (s), server->client (c), none (n) or both (b). Eg; s\n"
+            "\tfuzz_type is a hint to the fuzzer about the data type; b=binary, t=text, x=xml, j=json, h=html");
 
         return 1;
     }
@@ -194,12 +197,14 @@ void forward_data(_In_ const ConnectionData *connData) {
     while ((bytes_received = recv(connData->src_sock, buffer.data(), BUFFER_SIZE, 0)) > 0) {
         buffer.resize(bytes_received);
         
-        unsigned int bytes_to_send = bytes_received;
+        const unsigned int bytes_to_send = bytes_received;
 
         if (bFuzz)
             Fuzz(buffer, connData->fuzz_aggr, connData->fuzz_type);
 
-         send(connData->dst_sock, buffer.data(), bytes_to_send, 0);
+
+        auto send_bytes = buffer.size();
+        send(connData->dst_sock, buffer.data(), send_bytes, 0);
     }
 
     // Clean up the sockets once we're done forwarding
