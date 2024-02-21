@@ -59,7 +59,6 @@ bool naughtyHtmlLoadAttempted = false;
 std::vector<std::string> naughtyXml{};
 bool naughtyXmlLoadAttempted = false;
 
-
 RandomNumberGenerator rng{};
 
 #pragma warning(push)
@@ -95,12 +94,9 @@ static void LoadNaughtyFile(std::string filename, std::vector<std::string>& word
 
 // this is called multiple times, usually per block of data
 // TODO: Add a Modern C++ version that accepts std::vector<uchar*>
-bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
-	_Inout_						unsigned int* pLen,
-	_In_							unsigned int fuzzaggr,
-	_In_							unsigned int fuzz_type) {
+bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_type) {
 
-	// on first call, load the naughty strings file, but only if fuzz_type is not 'b'
+	// On first call, load the naughty strings file, but only if fuzz_type is not 'b'
 	// the 'attempted' flag is to prevent trying to load the file
 	// if the file does not exist or there's a load error
 	if (fuzz_type != 'b' && naughty.empty() && !naughtyLoadAttempted) {
@@ -126,26 +122,21 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 		LoadNaughtyFile("naughtyJson.txt", naughtyJson);
 	}
 
+	auto bufflen = buffer.size();
+
 	// don't fuzz everything
 	// check for nulls
 	// check data is not too small to fuzz
-	if (rng.generatePercent() > fuzzaggr 
-		|| pBuf == nullptr 
-		|| pLen == nullptr 
-		|| *pLen < MIN_BUFF_LEN) {
+	if (bufflen < MIN_BUFF_LEN || rng.generatePercent() > fuzzaggr) {
 		printf("Non");
 		return false;
 	}
 
-	// convert the incoming buffer to a gsl::span
-	// which allows for safer buffer manipulation
-	const gsl::span<char> buff(pBuf, *pLen);
-
 	// get a random range to fuzz, but make sure it's big enough
 	size_t start{}, end{};
 	do {
-		start = rng.range(0, *pLen).generate();
-		end = rng.range(0, *pLen).generate();
+		start = rng.range(0, gsl::narrow_cast<unsigned int>(bufflen)).generate();
+		end = rng.range(0, gsl::narrow_cast<unsigned int>(bufflen)).generate();
 		if (start > end) {
 			const size_t tmp = start;
 			start = end;
@@ -189,7 +180,7 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 				printf("Byt");
 				const char byte = rng.generateChar();
 				for (size_t j = start; j < end; j += skip) {
-					gsl::at(buff,j) = byte;
+					buffer.at(j) = byte;
 				}
 			}
 			break;
@@ -200,7 +191,7 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 			{
 				printf("Rnd");
 				for (size_t j = start; j < end; j += skip) {
-					gsl::at(buff,j) = rng.generateChar();
+					buffer.at(j) = rng.generateChar();
 				}
 			}
 			break;
@@ -211,7 +202,7 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 			{
 				printf("Chg");
 				for (size_t j = start; j < end; j += skip) {
-					auto c = gsl::at(buff, j);
+					auto c = buffer.at(j);
 					switch (rng.range(0, 4).generate()) {
 						case 0	: c++;	break;
 						case 1	: c--;	break;
@@ -219,7 +210,7 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 						default	: c*=2; break;
 					}
 
-					gsl::at(buff, j) = c;
+					buffer.at(j) = c;
 				}
 			}
 			break;
@@ -230,7 +221,7 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 			{
 				printf("Sup");
 				for (size_t j = start; j < end; j += skip) {
-					gsl::at(buff, j) |= 0x80;
+					buffer.at(j) |= 0x80;
 				}
 			}
 			break;
@@ -241,7 +232,7 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 			{
 				printf("Rup");
 				for (size_t j = start; j < end; j += skip) {
-					gsl::at(buff, j) &= 0x7F;
+					buffer.at(j) &= 0x7F;
 				}
 			}
 			break;
@@ -252,8 +243,8 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 			{
 				printf("Zer");
 				for (size_t j = start; j < end; j++) {
-					if (gsl::at(buff, j) == 0) {
-						gsl::at(buff, j) = rng.generateChar();
+					if (buffer.at(j) == 0) {
+						buffer.at(j) = rng.generateChar();
 						break;
 					}
 				}
@@ -274,7 +265,7 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 				for (size_t j = start; j < end; j += skip) {
 					const auto which = rng.range(0, _countof(interestingNum)).generate();
 					auto ch = gsl::narrow<unsigned char>(gsl::at(interestingNum, which));
-					gsl::at(buff, j) = ch;
+					buffer.at(j) = ch;
 				}
 			}
 			break;
@@ -286,7 +277,7 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 				printf("Chr");
 				for (size_t j = start; j < end; j += skip) {
 					const auto which = rng.range(0, gsl::narrow<unsigned int>(interestingChar.length())).generate();
-					gsl::at(buff, j) = gsl::at(interestingChar,which);
+					buffer.at(j) = gsl::at(interestingChar,which);
 				}
 			}
 			break;
@@ -297,9 +288,9 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 			{
 				printf("Rep");
 				for (size_t j = start; j < end; j++) {
-					auto ch = gsl::at(buff, j);
+					auto ch = buffer.at(j);
 					if (interestingChar.find(ch) != std::string::npos) {
-						gsl::at(buff, j) = ' ';
+						buffer.at(j) = ' ';
 
 						// 50% chance to break out of the loop
 						if(rng.range(0, 10).generate() >= 5)
@@ -314,7 +305,8 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 			case FuzzMutation::Truncate:
 			{
 				printf("Trn");
-				*pLen = gsl::narrow<unsigned int>(end);
+				bufflen = gsl::narrow<unsigned int>(end);
+				buffer.resize(bufflen);
 				earlyExit = true;
 			}
 			break;
@@ -362,7 +354,7 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 				}
 
 				for (size_t j = start; j < start + overlong.size(); j++)
-					gsl::at(buff, j) = overlong.at(j - start);
+					buffer.at(j) = overlong.at(j - start);
 			}
 
 			break;
@@ -379,7 +371,7 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 						naughty.at(rng.range(0, gsl::narrow<unsigned int>(naughty.size())).generate());
 
 					for (size_t j = start; j < start + nty.size() && j < end; j++) {
-						gsl::at(buff, j) = nty.at(j - start);
+						buffer.at(j) = nty.at(j - start);
 					}
 				}
 			}
@@ -394,7 +386,7 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 				auto utf8char = getRandomUnicodeCharacter();
 				for (unsigned char byte : utf8char) {
 					for (size_t j = start; j < start + utf8char.length() && j < end; j++)
-						gsl::at(buff, j) = byte;
+						buffer.at(j) = byte;
 				}
 			}
 
@@ -411,20 +403,4 @@ bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
 	}
 
 	return true;
-}
-
-// the below is a work in progress
-bool Fuzz(std::vector<char>& buff, unsigned int fuzzaggr, unsigned int fuzz_type) {
-	if (buff.empty())
-		return false;
-
-	char* pBuff = buff.data();
-	unsigned int length = gsl::narrow_cast<unsigned int>(buff.size());
-
-	const bool result = Fuzz(pBuff, &length, fuzzaggr, fuzz_type);
-
-	if (length != buff.size())
-		buff.resize(length);
-
-	return result;
 }

@@ -23,7 +23,7 @@
 
 #pragma comment(lib, "ws2_32.lib")
 
-constexpr auto VERSION = "1.50";
+constexpr auto VERSION = "1.70";
 constexpr size_t BUFFER_SIZE = 4096;
 
 // Passes important info to the socket threads 
@@ -43,10 +43,6 @@ std::string getCurrentTimeAsString();
 void forward_data(_In_ const ConnectionData*);
 unsigned __stdcall forward_thread(_In_  void*);
 bool Fuzz(std::vector<char>& buff, unsigned int fuzzaggr, unsigned int fuzz_type);
-bool Fuzz(_Inout_updates_bytes_(*pLen)	char* pBuf,
-         _Inout_						unsigned int* pLen,
-         _In_					        unsigned int fuzzaggr,
-         _In_                           unsigned int fuzz_type);
 
 // let's ggoooo...
 int main(int argc, char* argv[]) {
@@ -176,8 +172,7 @@ unsigned __stdcall forward_thread(_In_ void* data) {
 }
 
 void forward_data(_In_ const ConnectionData *connData) {
-    char buffer[BUFFER_SIZE]{};
-    int bytes_received{};
+
     bool bFuzz = false;
 
     // fuzzing only happens in some instances
@@ -192,15 +187,19 @@ void forward_data(_In_ const ConnectionData *connData) {
     if (bFuzz)
         fprintf(stderr, "%s\t", ctime);
 
+    int bytes_received{};
+    std::vector<char> buffer(BUFFER_SIZE);
+
     // the recv() can be from the client or the server, this code is called on one of two threads
-    while ((bytes_received = recv(connData->src_sock, static_cast<char*>(buffer), BUFFER_SIZE, 0)) > 0) {
+    while ((bytes_received = recv(connData->src_sock, buffer.data(), BUFFER_SIZE, 0)) > 0) {
+        buffer.resize(bytes_received);
         
         unsigned int bytes_to_send = bytes_received;
 
         if (bFuzz)
-            Fuzz(static_cast<char*>(buffer), &bytes_to_send, connData->fuzz_aggr, connData->fuzz_type);
+            Fuzz(buffer, connData->fuzz_aggr, connData->fuzz_type);
 
-         send(connData->dst_sock, static_cast<char*>(buffer), bytes_to_send, 0);
+         send(connData->dst_sock, buffer.data(), bytes_to_send, 0);
     }
 
     // Clean up the sockets once we're done forwarding
