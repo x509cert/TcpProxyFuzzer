@@ -11,6 +11,8 @@
 #include <locale>
 #include <codecvt>
 #include <vector>
+#include <algorithm>
+#include <iterator>  
 
 #include "rand.h"
 #include "gsl\narrow"
@@ -34,6 +36,7 @@ enum class FuzzMutation : uint32_t {
 	InterestingNumber,
 	InterestingChar,
 	Truncate,
+	Grow,
 	OverlongUtf8,
 	NaughtyWord,
 	RndUnicode,
@@ -128,7 +131,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 	// check for nulls
 	// check data is not too small to fuzz
 	if (bufflen < MIN_BUFF_LEN || rng.generatePercent() > fuzzaggr) {
-		printf("Non");
+		printf("Nnn");
 		return false;
 	}
 
@@ -149,9 +152,10 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 
 	// How many loops through the fuzzer?
 	// most of the time, 90%, keep it at one iteration
-	const unsigned int iterations = rng.range(0, 10).generate() != 7
-		? 1
-		: rng.range(1, 10).generate();
+	//const unsigned int iterations = rng.range(0, 10).generate() != 7
+	//	? 1
+	//	: rng.range(1, 10).generate();
+	const unsigned int iterations = rng.generateNormal(6.5, 2.0, 1, 12);
 
 	// This is where the work is done
 	for (size_t i = 0; i < iterations; i++) {
@@ -312,6 +316,70 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 			break;
 
 			///////////////////////////////////////////////////////////
+			// expand
+			case FuzzMutation::Grow:
+			{
+				printf("Gro");
+
+				// take the midpoint of the start and end, 
+				// and determine how much to grow the buffer
+				const size_t mid = (end - start) / 2;
+				const size_t fillsize = rng.range(4, 128).generate();
+
+				// this vector will contain the insertion string, and is set to all-nulls
+				std::vector<char> insert(fillsize);
+
+				switch (fuzz_type) {
+						
+					case 'j': 
+					{
+						const auto len = naughtyJson.size();
+						if (len) {
+							std::string data = naughtyJson.at(rng.range(0, len).generate());
+							auto replace_size = std::min(data.length(), fillsize);
+							std::copy(data.begin(), data.begin() + replace_size, insert.begin());
+						}
+					}
+					break;
+
+					case 'x': 
+					{
+						const auto len = naughtyXml.size();
+						if (len) {
+							std::string data = naughtyXml.at(rng.range(0, len).generate());
+							auto replace_size = std::min(data.length(), fillsize);
+							std::copy(data.begin(), data.begin() + replace_size, insert.begin());
+						}
+					}
+					break;
+
+					case 'h': 
+					{
+						const auto len = naughtyHtml.size();
+						if (len) {
+							std::string data = naughtyHtml.at(rng.range(0, len).generate());
+							auto replace_size = std::min(data.length(), fillsize);
+							std::copy(data.begin(), data.begin() + replace_size, insert.begin());
+						}
+					}
+					break;
+
+					case 'b':
+					default:
+					{
+						for (char& c : insert)
+							c = rng.generateChar();
+
+						break;
+					}
+				}
+
+				buffer.insert(buffer.begin() + mid, insert.begin(), insert.end());
+				earlyExit = true;
+			}
+			break;
+
+			///////////////////////////////////////////////////////////
 			// overlong UTF-8 encodings
 			case FuzzMutation::OverlongUtf8: 
 			{
@@ -393,6 +461,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 			break;
 
 			default:
+				printf("???");
 				break;
 		}
 

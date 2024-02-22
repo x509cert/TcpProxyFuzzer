@@ -2,6 +2,7 @@
 #define RAND_H
 
 #include <random>
+#include <algorithm>
 #include "gsl/util" 
 
 // high-level RNG wrapper class
@@ -26,6 +27,13 @@ public:
         const std::uniform_int_distribution<unsigned int>::param_type newRange(min, max - 1);
         distUInt.param(newRange);
         return *this;
+    }
+
+    const double generateNormal(double mu, double sigma, int clamp_bottom, int clamp_top) {
+        std::normal_distribution<double> distNormal(mu, sigma);
+        return std::clamp(static_cast<int>(std::round(distNormal(gen))), clamp_bottom, clamp_top);
+
+        return distNormal(gen);
     }
 
 private:

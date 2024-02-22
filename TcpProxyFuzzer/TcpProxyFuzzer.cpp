@@ -196,15 +196,12 @@ void forward_data(_In_ const ConnectionData *connData) {
     // the recv() can be from the client or the server, this code is called on one of two threads
     while ((bytes_received = recv(connData->src_sock, buffer.data(), BUFFER_SIZE, 0)) > 0) {
         buffer.resize(bytes_received);
-        
-        const unsigned int bytes_to_send = bytes_received;
 
         if (bFuzz)
             Fuzz(buffer, connData->fuzz_aggr, connData->fuzz_type);
 
-
-        auto send_bytes = buffer.size();
-        send(connData->dst_sock, buffer.data(), send_bytes, 0);
+        auto bytes_to_send = buffer.size();
+        send(connData->dst_sock, buffer.data(), bytes_to_send, 0);
     }
 
     // Clean up the sockets once we're done forwarding
