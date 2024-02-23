@@ -9,6 +9,7 @@
 // uses the Mersenne Twister engine and provides various rng distributions
 class RandomNumberGenerator {
 public:
+
     RandomNumberGenerator()
         :   gen(rd()), 
             distUInt(0, std::numeric_limits<unsigned int>::max()),
@@ -16,10 +17,10 @@ public:
             distSmallInt(0, 256) {
     }
 
-    auto generate()           {   return distUInt(gen); }
-    auto generatePercent()    {   return distPercent(gen); }
-    auto generateSmallInt()   {   return distSmallInt(gen); }
-    auto generateChar()       {   return gsl::narrow_cast<unsigned char>(distSmallInt(gen)); }
+    auto generate()             { return distUInt(gen); }
+    auto generatePercent()      { return distPercent(gen); }
+    auto generateSmallInt()     { return distSmallInt(gen); }
+    auto generateChar()         { return gsl::narrow_cast<unsigned char>(distSmallInt(gen)); }
 
     // this is so you can chain calls eg; rng.range(0, 10).generate()
     // this creates an RNG in the range [min, max)
@@ -29,11 +30,9 @@ public:
         return *this;
     }
 
-    const double generateNormal(double mu, double sigma, int clamp_bottom, int clamp_top) {
+    double generateNormal(double mu, double sigma, int clamp_bottom, int clamp_top)  {
         std::normal_distribution<double> distNormal(mu, sigma);
         return std::clamp(static_cast<int>(std::round(distNormal(gen))), clamp_bottom, clamp_top);
-
-        return distNormal(gen);
     }
 
 private:

@@ -155,7 +155,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 	//const unsigned int iterations = rng.range(0, 10).generate() != 7
 	//	? 1
 	//	: rng.range(1, 10).generate();
-	const unsigned int iterations = rng.generateNormal(6.5, 2.0, 1, 12);
+	auto iterations = gsl::narrow_cast<unsigned int>(rng.generateNormal(6.5, 2.0, 1, 12));
 
 	// This is where the work is done
 	for (size_t i = 0; i < iterations; i++) {
@@ -261,7 +261,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 			{
 				printf("Num");
 				const int interestingNum[] 
-					= { 0,1,7,8,9,15,16,17,31,32,
+					= { 0,1,2,3,4,5,7,8,9,15,16,17,31,32,
 						33,63,64,65,127,128,129,191,192,193,
 						223,224,225,239,240,241,247,248,249,253,
 						254,255 };
@@ -296,7 +296,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 					if (interestingChar.find(ch) != std::string::npos) {
 						buffer.at(j) = ' ';
 
-						// 50% chance to break out of the loop
+						// 50% chance to break out of the loop and not tweak all characters
 						if(rng.range(0, 10).generate() >= 5)
 							break;
 					}
@@ -305,7 +305,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 			break;
 
 			///////////////////////////////////////////////////////////
-			// truncate
+			// truncate the buffer
 			case FuzzMutation::Truncate:
 			{
 				printf("Trn");
@@ -316,7 +316,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 			break;
 
 			///////////////////////////////////////////////////////////
-			// expand
+			// grow the buffer
 			case FuzzMutation::Grow:
 			{
 				printf("Gro");
@@ -367,8 +367,14 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 					case 'b':
 					default:
 					{
-						for (char& c : insert)
-							c = rng.generateChar();
+						if (rng.range(0,10).generate() % 2) {
+							for (char& c : insert)
+								c = rng.generateChar();
+						} else {
+							auto r = rng.generateChar();
+							for (char& c : insert)
+								c = r;
+						}
 
 						break;
 					}
