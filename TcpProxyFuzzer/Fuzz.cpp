@@ -151,10 +151,6 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 	bool earlyExit = false;
 
 	// How many loops through the fuzzer?
-	// most of the time, 90%, keep it at one iteration
-	//const unsigned int iterations = rng.range(0, 10).generate() != 7
-	//	? 1
-	//	: rng.range(1, 10).generate();
 	const unsigned int iterations = rng.generateNormal(6.5, 2.0, 1, 12);
 
 	// This is where the work is done
@@ -168,7 +164,8 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 		
 		// which mutation to use. 
 		// The upper-range is updated automatically as new mutations are added
-		const auto whichMutation = static_cast<FuzzMutation>(rng.range(0, static_cast<unsigned int>(FuzzMutation::Max)).generate());
+		const auto whichMutation 
+			= static_cast<FuzzMutation>(rng.range(0, static_cast<unsigned int>(FuzzMutation::Max)).generate());
 
 		switch (whichMutation) {
 			///////////////////////////////////////////////////////////
@@ -294,7 +291,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 				for (size_t j = start; j < end; j++) {
 					auto ch = buffer.at(j);
 					if (interestingChar.find(ch) != std::string::npos) {
-						buffer.at(j) = ' ';
+						buffer.at(j) = rng.generateChar();
 
 						// 50% chance to break out of the loop
 						if(rng.range(0, 10).generate() >= 5)
@@ -465,7 +462,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 				break;
 		}
 
-		// right now, this only happens on truncation because we need 
+		// right now, this only happens on buffer size change because we need 
 		// to re-calc buffer sizes and this is the safest way to do it
 		if (earlyExit == true)
 			break; 
