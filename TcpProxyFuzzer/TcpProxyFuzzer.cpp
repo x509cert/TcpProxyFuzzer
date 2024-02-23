@@ -115,7 +115,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    int backlog = 10;
+    constexpr int backlog = 10;
     if (listen(server_sock, backlog) == SOCKET_ERROR) {
         fprintf(stderr, "Listen failed. Error: %d\n", WSAGetLastError());
         closesocket(server_sock);
@@ -187,7 +187,8 @@ void forward_data(_In_ const ConnectionData* connData) {
         bFuzz = true;
 
     if (bFuzz) {
-        auto ctime = getCurrentTimeAsString().c_str();
+        auto currTime = getCurrentTimeAsString();
+        auto ctime = currTime.c_str();
         fprintf(stderr, "%s\t", ctime);
     }
 

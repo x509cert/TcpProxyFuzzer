@@ -95,8 +95,7 @@ static void LoadNaughtyFile(std::string filename, std::vector<std::string>& word
 	}
 }
 
-// this is called multiple times, usually per block of data
-// TODO: Add a Modern C++ version that accepts std::vector<uchar*>
+// This is called multiple times, usually per block of data
 bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_type) {
 
 	// On first call, load the naughty strings file, but only if fuzz_type is not 'b'
@@ -131,7 +130,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 	// check for nulls
 	// check data is not too small to fuzz
 	if (bufflen < MIN_BUFF_LEN || rng.generatePercent() > fuzzaggr) {
-		printf("Nnn");
+		fprintf(stderr,"Nnn");
 		return false;
 	}
 
@@ -157,7 +156,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 	for (size_t i = 0; i < iterations; i++) {
 
 		// when laying down random chars, skip every N-bytes
-		// 70% of the time, skip 1
+		// 70% of the time, skip 1-byte at a time
 		const size_t skip = rng.range(0, 10).generate() < 7
 			? 1
 			: rng.range(1, 10).generate();
@@ -171,14 +170,14 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 			///////////////////////////////////////////////////////////
 			// no mutation
 			case FuzzMutation::None:
-				printf("Non");
+				fprintf(stderr,"Non");
 				break;
 
 			///////////////////////////////////////////////////////////
 			// set the range to a random byte
 			case FuzzMutation::RndByteSingle:
 			{
-				printf("Byt");
+				fprintf(stderr, "Byt");
 				const char byte = rng.generateChar();
 				for (size_t j = start; j < end; j += skip) {
 					buffer.at(j) = byte;
@@ -190,7 +189,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 			// write random bytes to the range
 			case FuzzMutation::RndByteMultiple:
 			{
-				printf("Rnd");
+				fprintf(stderr, "Rnd");
 				for (size_t j = start; j < end; j += skip) {
 					buffer.at(j) = rng.generateChar();
 				}
@@ -201,7 +200,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 			// a variant of above
 			case FuzzMutation::ChangeASCIIInt:
 			{
-				printf("Chg");
+				fprintf(stderr,"Chg");
 				for (size_t j = start; j < end; j += skip) {
 					auto c = buffer.at(j);
 					switch (rng.range(0, 4).generate()) {
@@ -220,7 +219,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 			// set upper bit
 			case FuzzMutation::SetUpperBit:
 			{
-				printf("Sup");
+				fprintf(stderr,"Sup");
 				for (size_t j = start; j < end; j += skip) {
 					buffer.at(j) |= 0x80;
 				}
@@ -231,7 +230,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 			// reset upper bit
 			case FuzzMutation::ResetUpperBit:
 			{
-				printf("Rup");
+				fprintf(stderr,"Rup");
 				for (size_t j = start; j < end; j += skip) {
 					buffer.at(j) &= 0x7F;
 				}
@@ -242,7 +241,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 			// set the first zero-byte found to non-zero
 			case FuzzMutation::ZeroByteToNonZero:
 			{
-				printf("Zer");
+				fprintf(stderr,"Zer");
 				for (size_t j = start; j < end; j++) {
 					if (buffer.at(j) == 0) {
 						buffer.at(j) = rng.generateChar();
@@ -256,7 +255,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 			// insert interesting edge-case numbers, often 2^n +/- 1
 			case FuzzMutation::InterestingNumber:
 			{
-				printf("Num");
+				fprintf(stderr,"Num");
 				const int interestingNum[] 
 					= { 0,1,2,3,4,5,7,8,9,15,16,17,31,32,
 						33,63,64,65,127,128,129,191,192,193,
@@ -275,7 +274,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 			// insert interesting characters
 			case FuzzMutation::InterestingChar:
 			{
-				printf("Chr");
+				fprintf(stderr,"Chr");
 				for (size_t j = start; j < end; j += skip) {
 					const auto which = rng.range(0, gsl::narrow<unsigned int>(interestingChar.length())).generate();
 					buffer.at(j) = gsl::at(interestingChar,which);
@@ -287,7 +286,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 			// replace interesting characters with space
 			case FuzzMutation::ReplaceInterestingChar:
 			{
-				printf("Rep");
+				fprintf(stderr,"Rep");
 				for (size_t j = start; j < end; j++) {
 					auto ch = buffer.at(j);
 					if (interestingChar.find(ch) != std::string::npos) {
@@ -305,7 +304,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 			// truncate the buffer
 			case FuzzMutation::Truncate:
 			{
-				printf("Trn");
+				fprintf(stderr,"Trn");
 				bufflen = gsl::narrow<unsigned int>(end);
 				buffer.resize(bufflen);
 				earlyExit = true;
@@ -316,7 +315,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 			// grow the buffer
 			case FuzzMutation::Grow:
 			{
-				printf("Gro");
+				fprintf(stderr,"Gro");
 
 				// take the midpoint of the start and end, 
 				// and determine how much to grow the buffer
@@ -330,7 +329,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 						
 					case 'j': 
 					{
-						const auto len = naughtyJson.size();
+						const auto len = gsl::narrow_cast<unsigned int>(naughtyJson.size());
 						if (len) {
 							std::string data = naughtyJson.at(rng.range(0, len).generate());
 							auto replace_size = std::min(data.length(), fillsize);
@@ -341,7 +340,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 
 					case 'x': 
 					{
-						const auto len = naughtyXml.size();
+						const auto len = gsl::narrow_cast<unsigned int>(naughtyXml.size());
 						if (len) {
 							std::string data = naughtyXml.at(rng.range(0, len).generate());
 							auto replace_size = std::min(data.length(), fillsize);
@@ -352,7 +351,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 
 					case 'h': 
 					{
-						const auto len = naughtyHtml.size();
+						const auto len = gsl::narrow_cast<unsigned int>(naughtyHtml.size());
 						if (len) {
 							std::string data = naughtyHtml.at(rng.range(0, len).generate());
 							auto replace_size = std::min(data.length(), fillsize);
@@ -386,7 +385,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 			// overlong UTF-8 encodings
 			case FuzzMutation::OverlongUtf8: 
 			{
-				printf("Utf");
+				fprintf(stderr,"Utf");
 				std::vector<unsigned char> overlong;
 				const unsigned int choice = rng.range(0,3).generate();
 				const char base_char = rng.generateChar();
@@ -436,7 +435,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 			case FuzzMutation::NaughtyWord:
 			{
 				if (fuzz_type != 'b' && !naughty.empty()) {
-					printf("Nau");
+					fprintf(stderr,"Nau");
 
 					const std::string& nty =
 						naughty.at(rng.range(0, gsl::narrow<unsigned int>(naughty.size())).generate());
@@ -453,7 +452,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 			// insert random Unicode (encoded as UTF-8)
 			case FuzzMutation::RndUnicode: 
 			{
-				printf("Uni");
+				fprintf(stderr,"Uni");
 				auto utf8char = getRandomUnicodeCharacter();
 				for (unsigned char byte : utf8char) {
 					for (size_t j = start; j < start + utf8char.length() && j < end; j++)
@@ -464,7 +463,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 			break;
 
 			default:
-				printf("???");
+				fprintf(stderr,"???");
 				break;
 		}
 

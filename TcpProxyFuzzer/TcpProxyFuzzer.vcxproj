@@ -110,6 +110,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalOptions>/analyze:plugin EspXEngine.dll  /EHsc %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -118,13 +119,16 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions512</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
