@@ -2,7 +2,7 @@
 // can act as a bidirectional fuzzer
 // Michael Howard (mikehow@microsoft.com)
 // Azure Database Security
-// Last updated 2/19/2024
+// Last updated 2/22/2024
 
 #define  _WINSOCK_DEPRECATED_NO_WARNINGS 1
 
@@ -23,7 +23,7 @@
 
 #pragma comment(lib, "ws2_32.lib")
 
-constexpr auto VERSION = "1.70";
+constexpr auto VERSION = "1.72";
 constexpr size_t BUFFER_SIZE = 4096;
 
 // Passes important info to the socket threads 
@@ -115,7 +115,8 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    if (listen(server_sock, 10) == SOCKET_ERROR) {
+    int backlog = 10;
+    if (listen(server_sock, backlog) == SOCKET_ERROR) {
         fprintf(stderr, "Listen failed. Error: %d\n", WSAGetLastError());
         closesocket(server_sock);
         WSACleanup();
@@ -123,7 +124,8 @@ int main(int argc, char* argv[]) {
     }
 
     fprintf(stdout, "TcpProxyFuzzer %s\n", VERSION);
-    fprintf(stdout, "Proxying from port %u -> %s:%u\n", listen_port, forward_ip.c_str(), forward_port);
+    fprintf(stdout, "Proxying from port %u -> %s:%u\n", 
+        listen_port, forward_ip.c_str(), forward_port);
 
     while (true) {
         const SOCKET client_sock = accept(server_sock, NULL, NULL);
@@ -200,7 +202,7 @@ void forward_data(_In_ const ConnectionData *connData) {
         if (bFuzz)
             Fuzz(buffer, connData->fuzz_aggr, connData->fuzz_type);
 
-        auto bytes_to_send = buffer.size();
+        const auto bytes_to_send = gsl::narrow_cast<int>(buffer.size());
         send(connData->dst_sock, buffer.data(), bytes_to_send, 0);
     }
 

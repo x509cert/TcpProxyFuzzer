@@ -151,7 +151,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 	bool earlyExit = false;
 
 	// How many loops through the fuzzer?
-	const unsigned int iterations = rng.generateNormal(6.5, 2.0, 1, 12);
+	const auto iterations = gsl::narrow_cast<unsigned int>(rng.generateNormal(6.5, 2.0, 1, 12));
 
 	// This is where the work is done
 	for (size_t i = 0; i < iterations; i++) {
