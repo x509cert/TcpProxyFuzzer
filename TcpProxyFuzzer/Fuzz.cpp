@@ -98,6 +98,14 @@ static void LoadNaughtyFile(std::string filename, std::vector<std::string>& word
 // This is called multiple times, usually per block of data
 bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_type) {
 
+	// don't fuzz everything
+	// check data is not too small to fuzz
+	auto bufflen = buffer.size();
+	if (bufflen < MIN_BUFF_LEN || rng.generatePercent() > fuzzaggr) {
+		fprintf(stderr, "Nnn");
+		return false;
+	}
+
 	// On first call, load the naughty strings file, but only if fuzz_type is not 'b'
 	// the 'attempted' flag is to prevent trying to load the file
 	// if the file does not exist or there's a load error
@@ -122,16 +130,6 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 	if ((fuzz_type == 't' || fuzz_type == 'j') && naughtyJson.empty() && !naughtyJsonLoadAttempted) {
 		naughtyJsonLoadAttempted = true;
 		LoadNaughtyFile("naughtyJson.txt", naughtyJson);
-	}
-
-	auto bufflen = buffer.size();
-
-	// don't fuzz everything
-	// check for nulls
-	// check data is not too small to fuzz
-	if (bufflen < MIN_BUFF_LEN || rng.generatePercent() > fuzzaggr) {
-		fprintf(stderr,"Nnn");
-		return false;
 	}
 
 	// get a random range to fuzz, but make sure it's big enough
