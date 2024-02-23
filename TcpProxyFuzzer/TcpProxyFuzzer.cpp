@@ -176,21 +176,20 @@ unsigned __stdcall forward_thread(_In_ void* data) {
     return 0;
 }
 
-void forward_data(_In_ const ConnectionData *connData) {
+void forward_data(_In_ const ConnectionData* connData) {
 
     bool bFuzz = false;
 
     // fuzzing only happens in some instances
-    if ((connData->fuzz_dir == 'b') 
-        || (connData->sock_dir == 1 && connData->fuzz_dir == 'c') 
+    if ((connData->fuzz_dir == 'b')
+        || (connData->sock_dir == 1 && connData->fuzz_dir == 'c')
         || (connData->sock_dir == 0 && connData->fuzz_dir == 's'))
         bFuzz = true;
 
-    auto time = getCurrentTimeAsString();
-    auto ctime = time.c_str();
-
-    if (bFuzz)
+    if (bFuzz) {
+        auto ctime = getCurrentTimeAsString().c_str();
         fprintf(stderr, "%s\t", ctime);
+    }
 
     int bytes_received{};
     std::vector<char> buffer(BUFFER_SIZE);
