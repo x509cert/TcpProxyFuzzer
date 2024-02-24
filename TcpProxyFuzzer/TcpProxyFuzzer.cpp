@@ -18,20 +18,32 @@
 #include <chrono>
 #include <sstream>
 #include <iomanip>
+#include <format>
+
+#include "Logger.h"
 #include "gsl/util"
 #include "gsl/span"
 
 #pragma comment(lib, "ws2_32.lib")
 
-constexpr auto VERSION = "1.72";
+constexpr auto VERSION = "1.80";
 constexpr size_t BUFFER_SIZE = 4096;
+
+#ifdef _DEBUG
+Logger gLog("fuzzlog.txt");
+#endif
 
 // Passes important info to the socket threads 
 // because thread APIs only support void* for args
+enum class SocketDir {
+    ClientToServer = 0,
+    ServerToClient = 1
+};
+
 typedef struct {
     SOCKET          src_sock;
     SOCKET          dst_sock;
-    int             sock_dir;    // This is the ACTUAL direction of the socket, client->server (0), server->client (1)
+    SocketDir       sock_dir;    // This is the ACTUAL direction of the socket, ClientToServer or ServerToClient
     char            fuzz_dir;    // This is the requested fuzzing direction; c=server to client, s=client to server, b=both directions, n=no fuzzing
     char 		    fuzz_type;   // Fuzzing type; b=binary, t=text, x=xml, j=json, h=html
     unsigned int    fuzz_aggr;   // Fuzzing aggressiveness as a %
@@ -154,8 +166,8 @@ int main(int argc, char* argv[]) {
             continue;
         }
 
-        ConnectionData client_to_target = { client_sock, target_sock, 0, direction, f_type, aggressiveness, startdelay };
-        ConnectionData target_to_client = { target_sock, client_sock, 1, direction, f_type, aggressiveness, startdelay };
+        ConnectionData client_to_target = { client_sock, target_sock, SocketDir::ClientToServer, direction, f_type, aggressiveness, startdelay };
+        ConnectionData target_to_client = { target_sock, client_sock, SocketDir::ServerToClient, direction, f_type, aggressiveness, startdelay};
 
         // Create two threads to handle bidirectional forwarding
         _beginthreadex(NULL, 0, forward_thread, &client_to_target, 0, NULL);
@@ -182,9 +194,16 @@ void forward_data(_In_ const ConnectionData* connData) {
 
     // fuzzing only happens in some instances
     if ((connData->fuzz_dir == 'b')
-        || (connData->sock_dir == 1 && connData->fuzz_dir == 'c')
-        || (connData->sock_dir == 0 && connData->fuzz_dir == 's'))
+        || (connData->sock_dir == SocketDir::ServerToClient && connData->fuzz_dir == 'c')
+        || (connData->sock_dir == SocketDir::ClientToServer && connData->fuzz_dir == 's'))
         bFuzz = true;
+
+#ifdef _DEBUG
+    gLog.Log(std::format("Fuzz: {0}, SockDir:{1}, FuzzDir:{2}", 
+        bFuzz, 
+        static_cast<int>(connData->sock_dir), 
+        connData->fuzz_dir));
+#endif
 
     if (bFuzz) {
         auto currTime = getCurrentTimeAsString();
@@ -197,12 +216,22 @@ void forward_data(_In_ const ConnectionData* connData) {
 
     // the recv() can be from the client or the server, this code is called on one of two threads
     while ((bytes_received = recv(connData->src_sock, buffer.data(), BUFFER_SIZE, 0)) > 0) {
+
+#ifdef _DEBUG
+        gLog.Log(std::format("recv {0} bytes", bytes_received));
+#endif
+
         buffer.resize(bytes_received);
 
         if (bFuzz)
             Fuzz(buffer, connData->fuzz_aggr, connData->fuzz_type);
 
         const auto bytes_to_send = gsl::narrow_cast<int>(buffer.size());
+
+#ifdef _DEBUG
+        gLog.Log(std::format("send {0} bytes", bytes_to_send));
+#endif
+
         send(connData->dst_sock, buffer.data(), bytes_to_send, 0);
     }
 
