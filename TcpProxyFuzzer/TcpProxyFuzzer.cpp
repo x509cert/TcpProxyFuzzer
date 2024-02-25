@@ -30,7 +30,7 @@ constexpr auto VERSION = "1.80";
 constexpr size_t BUFFER_SIZE = 4096;
 
 #ifdef _DEBUG
-Logger gLog("fuzzlog.txt");
+Logger gLog("proxylog");
 #endif
 
 // Passes important info to the socket threads 

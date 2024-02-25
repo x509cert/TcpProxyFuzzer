@@ -3,13 +3,19 @@
 #include <format>
 #include <stdexcept>
 #include <iomanip>
+#include <regex>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 Logger::Logger(const std::string& filename) 
-    : _logFile(filename, std::ios::app) {
+    : _logFile(GenerateNextFilename(filename), std::ios::app) {
 
     if (!_logFile.is_open()) {
         throw std::runtime_error("Unable to open log file: " + filename);
     }
+
+    _logFile << "----------------------------------------------------------" << std::endl;
 }
 
 Logger::~Logger() {
@@ -37,4 +43,27 @@ void Logger::Log(int indent, const std::string& message) {
 
 void Logger::Log(int indent, int message) {
 	Log(indent, std::to_string(message));
+}
+
+std::string Logger::GenerateNextFilename(const std::string& baseName) {
+
+    const fs::path dirPath = fs::path("fuzzlogs");
+    fs::create_directory(dirPath);
+
+    const std::regex pattern(baseName + "-fuzz.(\\d+).log"); 
+    std::smatch match{};
+    unsigned int maxNumber = 0;
+
+    for (const auto& entry : fs::directory_iterator(dirPath)) {
+        const std::string filename = entry.path().filename().string();
+        if (std::regex_match(filename, match, pattern)) {
+            const unsigned int number = std::stoi(match[1]);
+            if (number > maxNumber) {
+                maxNumber = number;
+            }
+        }
+    }
+    auto path = dirPath.string();
+    auto formattedString = std::format("{}\\{}-fuzz.{:04}.log", path, baseName, maxNumber + 1);
+    return formattedString;
 }

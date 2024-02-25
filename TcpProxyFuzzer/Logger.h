@@ -14,6 +14,9 @@ public:
     void Log(const int indent, int message);
 
 private:
+
+    std::string GenerateNextFilename(const std::string& baseName);
+
     std::ofstream _logFile;
     std::array<std::string,4> _indentStrings = { "", "  ", "    ", "      " };
 };
