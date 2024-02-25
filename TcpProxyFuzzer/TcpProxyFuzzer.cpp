@@ -24,6 +24,7 @@
 #include "Mutex.h"
 #include "gsl/util"
 #include "gsl/span"
+#include "crc32.h"
 
 #pragma comment(lib, "ws2_32.lib")
 
@@ -33,6 +34,8 @@ constexpr size_t BUFFER_SIZE = 4096;
 #ifdef _DEBUG
 Logger gLog("proxylog");
 #endif
+
+auto gCrc32 = crc32();
 
 // Passes important info to the socket threads 
 // because thread APIs only support void* for args
@@ -224,7 +227,8 @@ void forward_data(_In_ const ConnectionData* connData) {
     while ((bytes_received = recv(connData->src_sock, buffer.data(), BUFFER_SIZE, 0)) > 0) {
 
 #ifdef _DEBUG
-        gLog.Log(0,std::format("recv {0} bytes", bytes_received));
+        auto crc32r = gCrc32.calc((uint8_t*)buffer.data(), bytes_received);
+        gLog.Log(0,std::format("recv {0} bytes, CRC32: 0x{1:X}", bytes_received, crc32r));
 #endif
 
         buffer.resize(bytes_received);
@@ -235,7 +239,8 @@ void forward_data(_In_ const ConnectionData* connData) {
         const auto bytes_to_send = gsl::narrow_cast<int>(buffer.size());
 
 #ifdef _DEBUG
-        gLog.Log(0,std::format("send {0} bytes", bytes_to_send));
+        auto crc32s = gCrc32.calc((uint8_t*)buffer.data(), bytes_received);
+        gLog.Log(0,std::format("send {0} bytes, CRC32: 0x{1:X}", bytes_to_send, crc32s));
 #endif
 
         send(connData->dst_sock, buffer.data(), bytes_to_send, 0);

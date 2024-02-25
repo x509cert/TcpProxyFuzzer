@@ -27,9 +27,15 @@
     <ClCompile Include="rand.h">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Logger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="naughty.txt" />
+    <Text Include="naughty_html.txt" />
+    <Text Include="naughty_json.txt" />
+    <Text Include="naughty_xml.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="gsl\algorithm">
@@ -66,5 +72,16 @@
       <Filter>Header Files</Filter>
     </None>
     <None Include="cpp.hint" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Logger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mutex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="crc32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
