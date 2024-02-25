@@ -21,6 +21,7 @@
 #include <format>
 
 #include "Logger.h"
+#include "Mutex.h"
 #include "gsl/util"
 #include "gsl/span"
 
