@@ -63,6 +63,7 @@ std::string Logger::GenerateNextFilename(const std::string& baseName) {
             }
         }
     }
+
     auto path = dirPath.string();
     auto formattedString = std::format("{}\\{}-fuzz.{:04}.log", path, baseName, maxNumber + 1);
     return formattedString;

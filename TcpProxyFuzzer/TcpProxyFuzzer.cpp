@@ -199,7 +199,7 @@ void forward_data(_In_ const ConnectionData* connData) {
         bFuzz = true;
 
 #ifdef _DEBUG
-    gLog.Log(0,std::format("Fuzz: {0}, SockDir:{1}, FuzzDir:{2}", 
+    gLog.Log(0,std::format("Thread: {0}, SockDir:{1}, FuzzDir:{2}", 
         bFuzz, 
         static_cast<int>(connData->sock_dir), 
         connData->fuzz_dir));
