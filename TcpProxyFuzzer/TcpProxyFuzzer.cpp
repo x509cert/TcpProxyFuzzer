@@ -199,7 +199,7 @@ void forward_data(_In_ const ConnectionData* connData) {
         bFuzz = true;
 
 #ifdef _DEBUG
-    gLog.Log(std::format("Fuzz: {0}, SockDir:{1}, FuzzDir:{2}", 
+    gLog.Log(0,std::format("Fuzz: {0}, SockDir:{1}, FuzzDir:{2}", 
         bFuzz, 
         static_cast<int>(connData->sock_dir), 
         connData->fuzz_dir));
@@ -218,7 +218,7 @@ void forward_data(_In_ const ConnectionData* connData) {
     while ((bytes_received = recv(connData->src_sock, buffer.data(), BUFFER_SIZE, 0)) > 0) {
 
 #ifdef _DEBUG
-        gLog.Log(std::format("recv {0} bytes", bytes_received));
+        gLog.Log(0,std::format("recv {0} bytes", bytes_received));
 #endif
 
         buffer.resize(bytes_received);
@@ -229,7 +229,7 @@ void forward_data(_In_ const ConnectionData* connData) {
         const auto bytes_to_send = gsl::narrow_cast<int>(buffer.size());
 
 #ifdef _DEBUG
-        gLog.Log(std::format("send {0} bytes", bytes_to_send));
+        gLog.Log(0,std::format("send {0} bytes", bytes_to_send));
 #endif
 
         send(connData->dst_sock, buffer.data(), bytes_to_send, 0);

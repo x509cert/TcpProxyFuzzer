@@ -4,16 +4,18 @@
 
 #include <string>
 #include <fstream>
+#include <array>
 
 class Logger {
 public:
     Logger(const std::string& filename);
     ~Logger();
-    void Log(const std::string& message);
-    void Log(int message);
+    void Log(const int indent, const std::string& message);
+    void Log(const int indent, int message);
 
 private:
-    std::ofstream logFile;
+    std::ofstream _logFile;
+    std::array<std::string,4> _indentStrings = { "", "  ", "    ", "      " };
 };
 
 #endif // LOGGER_H

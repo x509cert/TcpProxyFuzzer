@@ -109,7 +109,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 	if (bufflen < MIN_BUFF_LEN || rng.generatePercent() > fuzzaggr) {
 		fprintf(stderr, "Nnn");
 #ifdef _DEBUG
-		gLog.Log("Nnn");
+		gLog.Log(1,"Nnn");
 #endif
 		return false;
 	}
@@ -159,7 +159,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 	const auto iterations = gsl::narrow_cast<unsigned int>(rng.generateNormal(6.5, 2.0, 1, 12));
 
 #ifdef _DEBUG
-	gLog.Log(std::format("Iter:{0}, Start:{1}, End:{2}", iterations, start, end));
+	gLog.Log(0, std::format("Iter:{0}, Start:{1}, End:{2}", iterations, start, end));
 #endif
 
 	// This is where the work is done
@@ -182,7 +182,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 			case FuzzMutation::None:
 				fprintf(stderr,"Non");
 #ifdef _DEBUG
-				gLog.Log("Non");
+				gLog.Log(1, "Non");
 #endif
 				break;
 
@@ -192,7 +192,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 			{
 				fprintf(stderr, "Byt");
 #ifdef _DEBUG
-				gLog.Log("Byt");
+				gLog.Log(1, "Byt");
 #endif
 				const char byte = rng.generateChar();
 				for (size_t j = start; j < end; j += skip) {
@@ -207,7 +207,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 			{
 				fprintf(stderr, "Rnd");
 #ifdef _DEBUG
-				gLog.Log("Rnd");
+				gLog.Log(1, "Rnd");
 #endif
 				for (size_t j = start; j < end; j += skip) {
 					buffer.at(j) = rng.generateChar();
@@ -221,7 +221,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 			{
 				fprintf(stderr,"Chg");
 #ifdef _DEBUG
-				gLog.Log("Chg");
+				gLog.Log(1, "Chg");
 #endif
 				for (size_t j = start; j < end; j += skip) {
 					auto c = buffer.at(j);
@@ -243,7 +243,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 			{
 				fprintf(stderr,"Sup");
 #ifdef _DEBUG
-				gLog.Log("Sup");
+				gLog.Log(1, "Sup");
 #endif
 				for (size_t j = start; j < end; j += skip) {
 					buffer.at(j) |= 0x80;
@@ -257,7 +257,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 			{
 				fprintf(stderr,"Rup");
 #ifdef _DEBUG
-				gLog.Log("Rup");
+				gLog.Log(1, "Rup");
 #endif
 				for (size_t j = start; j < end; j += skip) {
 					buffer.at(j) &= 0x7F;
@@ -271,7 +271,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 			{
 				fprintf(stderr,"Zer");
 #ifdef _DEBUG
-				gLog.Log("Zer");
+				gLog.Log(1, "Zer");
 #endif
 				for (size_t j = start; j < end; j++) {
 					if (buffer.at(j) == 0) {
@@ -288,7 +288,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 			{
 				fprintf(stderr,"Num");
 #ifdef _DEBUG
-				gLog.Log("Num");
+				gLog.Log(1, "Num");
 #endif
 				const int interestingNum[] 
 					= { 0,1,2,3,4,5,7,8,9,15,16,17,31,32,
@@ -310,7 +310,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 			{
 				fprintf(stderr,"Chr");
 #ifdef _DEBUG
-				gLog.Log("Chr");
+				gLog.Log(1, "Chr");
 #endif
 				for (size_t j = start; j < end; j += skip) {
 					const auto which = rng.range(0, gsl::narrow<unsigned int>(interestingChar.length())).generate();
@@ -325,7 +325,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 			{
 				fprintf(stderr,"Rep");
 #ifdef _DEBUG
-				gLog.Log("Rep");
+				gLog.Log(1, "Rep");
 #endif
 				for (size_t j = start; j < end; j++) {
 					auto ch = buffer.at(j);
@@ -350,7 +350,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 				buffer.resize(bufflen);
 				earlyExit = true;
 #ifdef _DEBUG
-				gLog.Log(std::format("Trn->size: {0}", bufflen));
+				gLog.Log(1, std::format("Trn->size: {0}", bufflen));
 #endif
 
 			}
@@ -368,7 +368,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 				const size_t fillsize = rng.range(4, 128).generate();
 
 #ifdef _DEBUG
-				gLog.Log(std::format("Gro->mid: {0}, size{1}", mid, fillsize));
+				gLog.Log(1, std::format("Gro->mid: {0}, size{1}", mid, fillsize));
 #endif
 				// this vector will contain the insertion string, and is set to all-nulls
 				std::vector<char> insert(fillsize);
@@ -382,6 +382,9 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 							std::string data = naughtyJson.at(rng.range(0, len).generate());
 							auto replace_size = std::min(data.length(), fillsize);
 							std::copy(data.begin(), data.begin() + replace_size, insert.begin());
+#ifdef _DEBUG
+							gLog.Log(2, std::format("Repl Size (J): {0}", replace_size));
+#endif
 						}
 					}
 					break;
@@ -393,6 +396,9 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 							std::string data = naughtyXml.at(rng.range(0, len).generate());
 							auto replace_size = std::min(data.length(), fillsize);
 							std::copy(data.begin(), data.begin() + replace_size, insert.begin());
+#ifdef _DEBUG
+							gLog.Log(2, std::format("Repl Size (X): {0}", replace_size));
+#endif
 						}
 					}
 					break;
@@ -404,6 +410,9 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 							std::string data = naughtyHtml.at(rng.range(0, len).generate());
 							auto replace_size = std::min(data.length(), fillsize);
 							std::copy(data.begin(), data.begin() + replace_size, insert.begin());
+#ifdef _DEBUG
+							gLog.Log(2, std::format("Repl Size (H): {0}", replace_size));
+#endif
 						}
 					}
 					break;
@@ -424,10 +433,6 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 					}
 				}
 
-#ifdef _DEBUG
-				gLog.Log("Nnn");
-#endif
-
 				buffer.insert(buffer.begin() + mid, insert.begin(), insert.end());
 				earlyExit = true;
 			}
@@ -439,7 +444,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 			{
 				fprintf(stderr,"Utf");
 #ifdef _DEBUG
-				gLog.Log("Utf");
+				gLog.Log(1,"Utf");
 #endif
 				std::vector<unsigned char> overlong;
 				const unsigned int choice = rng.range(0,3).generate();
@@ -492,7 +497,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 				if (fuzz_type != 'b' && !naughty.empty()) {
 					fprintf(stderr,"Nau");
 #ifdef _DEBUG
-					gLog.Log("Nau");
+					gLog.Log(1,"Nau");
 #endif
 
 					const std::string& nty =
@@ -512,7 +517,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 			{
 				fprintf(stderr,"Uni");
 #ifdef _DEBUG
-				gLog.Log("Uni");
+				gLog.Log(1,"Uni");
 #endif
 				auto utf8char = getRandomUnicodeCharacter();
 				for (unsigned char byte : utf8char) {
@@ -526,7 +531,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 			default:
 				fprintf(stderr,"???");
 #ifdef _DEBUG
-				gLog.Log("???");
+				gLog.Log(1,"???");
 #endif
 				break;
 		}

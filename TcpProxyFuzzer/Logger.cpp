@@ -4,19 +4,21 @@
 #include <stdexcept>
 #include <iomanip>
 
-Logger::Logger(const std::string& filename) : logFile(filename, std::ios::app) {
-    if (!logFile.is_open()) {
+Logger::Logger(const std::string& filename) 
+    : _logFile(filename, std::ios::app) {
+
+    if (!_logFile.is_open()) {
         throw std::runtime_error("Unable to open log file: " + filename);
     }
 }
 
 Logger::~Logger() {
-    if (logFile.is_open()) {
-        logFile.close();
+    if (_logFile.is_open()) {
+        _logFile.close();
     }
 }
 
-void Logger::Log(const std::string& message) {
+void Logger::Log(int indent, const std::string& message) {
 
     const auto now = std::chrono::system_clock::now();
     const auto now_time_t = std::chrono::system_clock::to_time_t(now);
@@ -26,11 +28,13 @@ void Logger::Log(const std::string& message) {
     std::tm localtime;
     localtime_s(&localtime, &now_time_t);
 
-    logFile << std::put_time(&localtime, "%H:%M:%S") << '.'
+    indent = std::max(0, std::min(indent, static_cast<int>(_indentStrings.size())));
+
+    _logFile << _indentStrings.at(indent) << std::put_time(&localtime, "%H:%M:%S") << '.'
         << std::setfill('0') << std::setw(3) << now_ms.count()
         << ": " << message << std::endl;
 }
 
-void Logger::Log(int message) {
-	Log(std::to_string(message));
+void Logger::Log(int indent, int message) {
+	Log(indent, std::to_string(message));
 }
