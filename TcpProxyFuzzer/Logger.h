@@ -5,13 +5,14 @@
 #include <string>
 #include <fstream>
 #include <array>
+#include <vector>
 
 class Logger {
 public:
     Logger(const std::string& filename);
     ~Logger();
     void Log(const int indent, const std::string& message);
-    void Log(const int indent, int message);
+    void Log(const int indent, const std::vector<char>&  buf);
 
 private:
 

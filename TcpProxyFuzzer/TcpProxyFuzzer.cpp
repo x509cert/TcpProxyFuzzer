@@ -225,13 +225,13 @@ void forward_data(_In_ const ConnectionData* connData) {
 
     // the recv() can be from the client or the server, this code is called on one of two threads
     while ((bytes_received = recv(connData->src_sock, buffer.data(), BUFFER_SIZE, 0)) > 0) {
+        buffer.resize(bytes_received);
 
 #ifdef _DEBUG
         auto crc32r = gCrc32.calc((uint8_t*)buffer.data(), bytes_received);
         gLog.Log(0,std::format("recv {0} bytes, CRC32: 0x{1:X}", bytes_received, crc32r));
+        //gLog.Log(1, buffer);
 #endif
-
-        buffer.resize(bytes_received);
 
         if (bFuzz)
             Fuzz(buffer, connData->fuzz_aggr, connData->fuzz_type);
@@ -241,6 +241,7 @@ void forward_data(_In_ const ConnectionData* connData) {
 #ifdef _DEBUG
         auto crc32s = gCrc32.calc((uint8_t*)buffer.data(), bytes_received);
         gLog.Log(0,std::format("send {0} bytes, CRC32: 0x{1:X}", bytes_to_send, crc32s));
+        //gLog.Log(1, buffer); 
 #endif
 
         send(connData->dst_sock, buffer.data(), bytes_to_send, 0);

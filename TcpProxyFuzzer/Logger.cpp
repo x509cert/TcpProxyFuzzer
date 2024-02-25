@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <iomanip>
 #include <regex>
+#include <vector>
 #include <filesystem>
 
 namespace fs = std::filesystem;
@@ -65,8 +66,13 @@ void Logger::Log(int indent, const std::string& message) {
         << ": " << message << std::endl;
 }
 
-void Logger::Log(int indent, int message) {
-	Log(indent, std::to_string(message));
+void Logger::Log(const int indent, const std::vector<char>& buf) {
+    std::stringstream hexStream;
+    for (auto byte : buf) {
+        hexStream << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(byte);
+    }
+
+    Log(indent, hexStream.str());
 }
 
 
