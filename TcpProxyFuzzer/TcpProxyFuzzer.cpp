@@ -21,6 +21,7 @@
 #include <format>
 
 #include "Logger.h"
+#include "Mutex.h"
 #include "gsl/util"
 #include "gsl/span"
 
@@ -205,12 +206,17 @@ void forward_data(_In_ const ConnectionData* connData) {
         connData->fuzz_dir));
 #endif
 
-    if (bFuzz) {
-        auto currTime = getCurrentTimeAsString();
-        auto ctime = currTime.c_str();
-        fprintf(stderr, "%s\t", ctime);
-    }
+    auto currTime = getCurrentTimeAsString();
+    auto ctime = currTime.c_str();
+    fprintf(stderr, "%s\t", ctime);
 
+    if (!bFuzz) {
+        auto s = std::format("!Fuzz: SockDir:{0}, FuzzDir:{1}\n",
+            static_cast<int>(connData->sock_dir),
+            connData->fuzz_dir);
+        fprintf(stderr, s.c_str());
+    }
+    
     int bytes_received{};
     std::vector<char> buffer(BUFFER_SIZE);
 
