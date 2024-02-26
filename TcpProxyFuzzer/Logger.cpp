@@ -6,7 +6,10 @@
 #include <regex>
 #include <vector>
 #include <filesystem>
+#include "mutex"
 #include "gsl/util"
+
+std::mutex _oneLogWrite{};
 
 namespace fs = std::filesystem;
 
@@ -51,6 +54,9 @@ Logger::~Logger() {
 }
 
 void Logger::Log(int indent, const std::string& message) {
+
+    // this is here in debug builds, so that log data is serialized correctly in the log file
+    std::scoped_lock lock(_oneLogWrite);
 
     const auto now = std::chrono::system_clock::now();
     const auto now_time_t = std::chrono::system_clock::to_time_t(now);

@@ -3,7 +3,7 @@
 
 class crc32 {
 public:
-    crc32() {
+    crc32() noexcept {
         uint32_t crc{};
         for (uint32_t i = 0; i < 256; i++) {
             crc = i;
@@ -15,6 +15,7 @@ public:
                     crc >>= 1;
                 }
             }
+
             gsl::at(_crc_table, i) = crc;
         }
     }

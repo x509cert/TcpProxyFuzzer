@@ -77,9 +77,6 @@
     <ClInclude Include="Logger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Mutex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="crc32.h">
       <Filter>Header Files</Filter>
     </ClInclude>

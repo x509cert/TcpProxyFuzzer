@@ -97,16 +97,19 @@ static void LoadNaughtyFile(std::string filename, std::vector<std::string>& word
 				words.push_back(line);
 			}
 		}
+	} else {
+		std::cout << "Error loading " << filename << ", errno " << errno << "\n";
 	}
 }
 
 // This is called multiple times, usually per block of data
-bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_type) {
+bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_type, unsigned int offset) {
 
 	// don't fuzz everything
 	// check data is not too small to fuzz
+	// arbitreay decision, the offset can be no more than 50% of the buffer size
 	auto bufflen = buffer.size();
-	if (bufflen < MIN_BUFF_LEN || rng.generatePercent() > fuzzaggr) {
+	if (bufflen < MIN_BUFF_LEN || rng.generatePercent() > fuzzaggr || offset >= bufflen/2) {
 		fprintf(stderr, "Nnn");
 #ifdef _DEBUG
 		gLog.Log(1,"Nnn");
@@ -125,38 +128,37 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 	// XML Naughty Strings
 	if ((fuzz_type == 't' || fuzz_type == 'x') && naughtyXml.empty() && !naughtyXmlLoadAttempted) {
 		naughtyXmlLoadAttempted = true;
-		LoadNaughtyFile("naughtyXml.txt", naughtyXml);
+		LoadNaughtyFile("naughty_Xml.txt", naughtyXml);
 	}
 
 	// HTML Naughty Strings
 	if ((fuzz_type == 't'|| fuzz_type == 'h') && naughtyHtml.empty() && !naughtyHtmlLoadAttempted) {
 		naughtyHtmlLoadAttempted = true;
-		LoadNaughtyFile("naughtyHtml.txt", naughtyHtml);
+		LoadNaughtyFile("naughty_Html.txt", naughtyHtml);
 	}
 
 	// JSON Naughty Strings
 	if ((fuzz_type == 't' || fuzz_type == 'j') && naughtyJson.empty() && !naughtyJsonLoadAttempted) {
 		naughtyJsonLoadAttempted = true;
-		LoadNaughtyFile("naughtyJson.txt", naughtyJson);
+		LoadNaughtyFile("naughty_Json.txt", naughtyJson);
 	}
 
-	// get a random range to fuzz, but make sure it's big enough
-	size_t start{}, end{};
+	// get a random range to fuzz, but make sure it's big enough, but not too big!
+	size_t start{}, start_offset{}, end{ };
 	do {
-		start = rng.range(0, gsl::narrow_cast<unsigned int>(bufflen)).generate();
-		end = rng.range(0, gsl::narrow_cast<unsigned int>(bufflen)).generate();
-		if (start > end) {
-			const size_t tmp = start;
-			start = end;
-			end = tmp;
-		}
-	} while (end - start < MIN_BUFF_LEN); //TODO - double check this won't loop forever!
+		start = rng.range(offset, gsl::narrow_cast<unsigned int>(bufflen - offset)).generate();
+		start_offset = rng.range(0, gsl::narrow_cast<unsigned int>(bufflen)).generate();
+		start_offset >>= 3;
+		start_offset++;
+	} while (start + start_offset >= bufflen); //TODO - double check this won't loop forever!
+
+	end = start + start_offset;
 
 	// if we need to leave the main fuzzing loop
 	bool earlyExit = false;
 
 	// How many loops through the fuzzer?
-	const auto iterations = gsl::narrow_cast<unsigned int>(rng.generateNormal(6.5, 2.0, 1, 12));
+	const auto iterations = gsl::narrow_cast<unsigned int>(rng.generateNormal(5, 2.0, 1, 12));
 
 #ifdef _DEBUG
 	gLog.Log(0, std::format("Iter:{0}, Start:{1}, End:{2}", iterations, start, end));

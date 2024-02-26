@@ -50,14 +50,14 @@ typedef struct {
     char            fuzz_dir;    // This is the requested fuzzing direction; c=server to client, s=client to server, b=both directions, n=no fuzzing
     char 		    fuzz_type;   // Fuzzing type; b=binary, t=text, x=xml, j=json, h=html
     unsigned int    fuzz_aggr;   // Fuzzing aggressiveness as a %
-    int             delay;	     // Delay in msec before fuzzing starts, UNUSED
+    unsigned int    offset;	     // Offset in data stream where fuzzing starts, useful to skip headers
 } ConnectionData;
 
 // forward decls
 std::string getCurrentTimeAsString();
 void forward_data(_In_ const ConnectionData*);
 unsigned __stdcall forward_thread(_In_  void*);
-bool Fuzz(std::vector<char>& buff, unsigned int fuzzaggr, unsigned int fuzz_type);
+bool Fuzz(std::vector<char>& buff, unsigned int fuzzaggr, unsigned int fuzz_type, unsigned int offset);
 
 // let's ggoooo...
 int main(int argc, char* argv[]) {
@@ -67,15 +67,15 @@ int main(int argc, char* argv[]) {
     if (argv==nullptr || argc != 8) {
 
         fprintf(stdout,
-            "Usage: TcpProxyFuzzer <listen_port> <forward_ip> <forward_port> <start_delay> <aggressiveness> <fuzz_direction>\n"
+            "Usage: TcpProxyFuzzer <listen_port> <forward_ip> <forward_port> <start_offset> <aggressiveness> <fuzz_direction> <fuzz_type>\n"
             "Where:\n"
             "\tlisten_port is the proxy listening port.Eg; 8088\n"
             "\tforward_ip is the host to forward resuests to. Eg; 192.168.1.77\n"
             "\tforward_port is the port to proxy requests to. Eg; 80\n"
-            "\tstart_delay is how long to wait before fuzzing data in msec. Eg; 100 [Currently ignored and not implemented]\n"
+            "\tstart_offset is how far into the datastream to start fuzzing. Eg; 42\n"
             "\taggressiveness is how agressive the fuzzing should be as a percentage between 0-100. Eg; 7\n"
             "\tfuzz_direction determines whether to fuzz from client->server (s), server->client (c), none (n) or both (b). Eg; s\n"
-            "\tfuzz_type is a hint to the fuzzer about the data type; b=binary, t=text, x=xml, j=json, h=html");
+            "\tfuzz_type is a hint to the fuzzer about the data type; b=binary, t=text, x=xml, j=json, h=html\n\n");
 
         return 1;
     }
@@ -95,7 +95,7 @@ int main(int argc, char* argv[]) {
     const u_short listen_port         = gsl::narrow_cast<u_short>(std::stoi(args.at(1)));
     const std::string forward_ip      = args.at(2);
     const u_short forward_port        = gsl::narrow_cast<u_short>(std::stoi(args.at(3)));
-    const int startdelay              = std::stoi(args.at(4)); // currently unused
+    const unsigned int offset         = std::stoi(args.at(4)); 
     const unsigned int aggressiveness = std::stoi(args.at(5));
     const char direction              = gsl::narrow_cast<const char>(std::tolower(args.at(6).at(0)));
     const char f_type                 = gsl::narrow_cast<const char>(std::tolower(args.at(7).at(0)));
@@ -103,6 +103,7 @@ int main(int argc, char* argv[]) {
     // basic error checking
     if (listen_port <= 0 || listen_port >= 65535 ||
         aggressiveness < 0 || aggressiveness > 100 ||
+        offset > BUFFER_SIZE || 
         (direction != 'c' && direction != 's' && direction != 'n' && direction != 'b') || 
         (f_type != 'b' && f_type != 't' && f_type != 'x' && f_type != 'j' && f_type !='h')) {
         fprintf(stderr, "Error in one or more args.");
@@ -169,8 +170,8 @@ int main(int argc, char* argv[]) {
             continue;
         }
 
-        ConnectionData client_to_target = { client_sock, target_sock, SocketDir::ClientToServer, direction, f_type, aggressiveness, startdelay };
-        ConnectionData target_to_client = { target_sock, client_sock, SocketDir::ServerToClient, direction, f_type, aggressiveness, startdelay};
+        ConnectionData client_to_target = { client_sock, target_sock, SocketDir::ClientToServer, direction, f_type, aggressiveness, offset };
+        ConnectionData target_to_client = { target_sock, client_sock, SocketDir::ServerToClient, direction, f_type, aggressiveness, offset};
 
         // Create two threads to handle bidirectional forwarding
         _beginthreadex(NULL, 0, forward_thread, &client_to_target, 0, NULL);
@@ -212,15 +213,6 @@ void forward_data(_In_ const ConnectionData* connData) {
     auto ctime = currTime.c_str();
     fprintf(stderr, "%s\t", ctime);
 
-    /*
-    if (!bFuzz) {
-        auto s = std::format("!Fuzz: SockDir:{0}, FuzzDir:{1}\n",
-            static_cast<int>(connData->sock_dir),
-            connData->fuzz_dir);
-        fprintf(stderr, s.c_str());
-    }
-    */
-    
     int bytes_received{};
     std::vector<char> buffer(BUFFER_SIZE);
 
@@ -234,7 +226,7 @@ void forward_data(_In_ const ConnectionData* connData) {
 #endif
 
         if (bFuzz)
-            Fuzz(buffer, connData->fuzz_aggr, connData->fuzz_type);
+            Fuzz(buffer, connData->fuzz_aggr, connData->fuzz_type, connData->offset);
 
         const auto bytes_to_send = gsl::narrow_cast<int>(buffer.size());
 
