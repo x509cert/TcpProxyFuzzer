@@ -21,7 +21,6 @@
 #include <format>
 
 #include "Logger.h"
-#include "Mutex.h"
 #include "gsl/util"
 #include "gsl/span"
 #include "crc32.h"
@@ -213,12 +212,14 @@ void forward_data(_In_ const ConnectionData* connData) {
     auto ctime = currTime.c_str();
     fprintf(stderr, "%s\t", ctime);
 
+    /*
     if (!bFuzz) {
         auto s = std::format("!Fuzz: SockDir:{0}, FuzzDir:{1}\n",
             static_cast<int>(connData->sock_dir),
             connData->fuzz_dir);
         fprintf(stderr, s.c_str());
     }
+    */
     
     int bytes_received{};
     std::vector<char> buffer(BUFFER_SIZE);
@@ -230,7 +231,6 @@ void forward_data(_In_ const ConnectionData* connData) {
 #ifdef _DEBUG
         auto crc32r = gCrc32.calc((uint8_t*)buffer.data(), bytes_received);
         gLog.Log(0,std::format("recv {0} bytes, CRC32: 0x{1:X}", bytes_received, crc32r));
-        //gLog.Log(1, buffer);
 #endif
 
         if (bFuzz)
@@ -241,10 +241,11 @@ void forward_data(_In_ const ConnectionData* connData) {
 #ifdef _DEBUG
         auto crc32s = gCrc32.calc((uint8_t*)buffer.data(), bytes_received);
         gLog.Log(0,std::format("send {0} bytes, CRC32: 0x{1:X}", bytes_to_send, crc32s));
-        //gLog.Log(1, buffer); 
 #endif
 
         send(connData->dst_sock, buffer.data(), bytes_to_send, 0);
+
+        buffer.resize(BUFFER_SIZE);
     }
 
     // Clean up the sockets once we're done forwarding

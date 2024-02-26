@@ -15,15 +15,17 @@ public:
                     crc >>= 1;
                 }
             }
-            _crc_table[i] = crc;
+            gsl::at(_crc_table,i) = crc;
         }
 	}
 
     uint32_t calc(uint8_t* buf, size_t len) const {
+        if (!buf) return 0;
+
         uint32_t crc = 0xFFFFFFFF;
         for (size_t i = 0; i < len; i++) {
-            uint8_t index = (uint8_t)(crc ^ buf[i]);
-            crc = (crc >> 8) ^ _crc_table[index];
+            const uint8_t index = (uint8_t)(crc ^ buf[i]);
+            crc = (crc >> 8) ^ gsl::at(_crc_table,index);
         }
         return ~crc;
     }

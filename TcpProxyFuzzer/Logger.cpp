@@ -6,6 +6,7 @@
 #include <regex>
 #include <vector>
 #include <filesystem>
+#include "gsl/util"
 
 namespace fs = std::filesystem;
 
@@ -21,7 +22,7 @@ std::string Logger::GenerateNextFilename(const std::string& baseName) {
     for (const auto& entry : fs::directory_iterator(dirPath)) {
         const std::string filename = entry.path().filename().string();
         if (std::regex_match(filename, match, pattern)) {
-            const unsigned int number = std::stoi(match[1]);
+            const unsigned int number = std::stoi(gsl::at(match,1));
             if (number > maxNumber) {
                 maxNumber = number;
             }
