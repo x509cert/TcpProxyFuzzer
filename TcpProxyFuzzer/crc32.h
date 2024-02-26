@@ -3,7 +3,7 @@
 
 class crc32 {
 public:
-	crc32() {
+    crc32() {
         uint32_t crc{};
         for (uint32_t i = 0; i < 256; i++) {
             crc = i;
@@ -15,21 +15,21 @@ public:
                     crc >>= 1;
                 }
             }
-            gsl::at(_crc_table,i) = crc;
+            gsl::at(_crc_table, i) = crc;
         }
-	}
+    }
 
-    uint32_t calc(uint8_t* buf, size_t len) const {
-        if (!buf) return 0;
+    uint32_t calc(const std::vector<char>& buf) const {
+        if (buf.empty()) return 0;
 
         uint32_t crc = 0xFFFFFFFF;
-        for (size_t i = 0; i < len; i++) {
-            const uint8_t index = (uint8_t)(crc ^ buf[i]);
-            crc = (crc >> 8) ^ gsl::at(_crc_table,index);
+        for (size_t i = 0; i < buf.size(); i++) {
+            const uint8_t index = gsl::narrow_cast<uint8_t>(crc ^ gsl::at(buf,i));
+            crc = (crc >> 8) ^ gsl::at(_crc_table, index);
         }
         return ~crc;
     }
 
 private: 
-    uint32_t _crc_table[256];
+    uint32_t _crc_table[256]{};
 };
