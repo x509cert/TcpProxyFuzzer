@@ -43,8 +43,6 @@ Logger::Logger(const std::string& filename)
     if (!_logFile.is_open()) {
         throw std::runtime_error("Unable to open log file: " + filename);
     }
-
-    _logFile << "----------------------------------------------------------" << std::endl;
 }
 
 Logger::~Logger() {
@@ -53,7 +51,7 @@ Logger::~Logger() {
     }
 }
 
-void Logger::Log(int indent, const std::string& message) {
+void Logger::Log(int indent, bool newline, const std::string& message) {
 
     // this is here in debug builds, so that log data is serialized correctly in the log file
     std::scoped_lock lock(_oneLogWrite);
@@ -68,18 +66,19 @@ void Logger::Log(int indent, const std::string& message) {
 
     indent = std::max(0, std::min(indent, static_cast<int>(_indentStrings.size())));
 
-    _logFile << _indentStrings.at(indent) << std::put_time(&localtime, "%H:%M:%S") << '.'
+    auto nl = newline ? "\n" : " ";
+    _logFile << nl << _indentStrings.at(indent) << std::put_time(&localtime, "%H:%M:%S") << '.'
         << std::setfill('0') << std::setw(3) << now_ms.count()
         << ": " << message << std::endl;
 }
 
-void Logger::Log(const int indent, const std::vector<char>& buf) {
+void Logger::Log(const int indent, bool newline, const std::vector<char>& buf) {
     std::stringstream hexStream;
     for (auto byte : buf) {
         hexStream << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(byte);
     }
 
-    Log(indent, hexStream.str());
+    Log(indent, newline, hexStream.str());
 }
 
 

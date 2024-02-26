@@ -9,8 +9,8 @@ class Logger {
 public:
     Logger(const std::string& filename);
     ~Logger();
-    void Log(const int indent, const std::string& message);
-    void Log(const int indent, const std::vector<char>&  buf);
+    void Log(const int indent, const bool newline, const std::string& message);
+    void Log(const int indent, const bool newline, const std::vector<char>&  buf);
 
     // Unneeded class members, abiding by 'the rule of five'
     // https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#c21-if-you-define-or-delete-any-copy-move-or-destructor-function-define-or-delete-them-all
