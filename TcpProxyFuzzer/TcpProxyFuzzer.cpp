@@ -222,7 +222,7 @@ void forward_data(_In_ const ConnectionData* connData) {
 
 #ifdef _DEBUG
         auto crc32r = gCrc32.calc(buffer);
-        gLog.Log(0,false, std::format("recv {0} bytes, CRC32: 0x{1:X}", bytes_received, crc32r));
+        gLog.Log(0,false, std::format("recv() {0} bytes, CRC32: 0x{1:X}", bytes_received, crc32r));
 #endif
 
         if (bFuzz)
@@ -232,7 +232,7 @@ void forward_data(_In_ const ConnectionData* connData) {
 
 #ifdef _DEBUG
         auto crc32s = gCrc32.calc(buffer);
-        gLog.Log(0, false,std::format("send {0} bytes, CRC32: 0x{1:X}", bytes_to_send, crc32s));
+        gLog.Log(0, false,std::format("send() {0} bytes, CRC32: 0x{1:X}", bytes_to_send, crc32s));
 #endif
 
         send(connData->dst_sock, buffer.data(), bytes_to_send, 0);

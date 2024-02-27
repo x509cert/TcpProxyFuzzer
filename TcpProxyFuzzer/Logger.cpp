@@ -9,6 +9,7 @@
 #include "mutex"
 #include "gsl/util"
 
+// used in debug to make sure fuzz data is serialized correctly in the log file
 std::mutex _oneLogWrite{};
 
 namespace fs = std::filesystem;
