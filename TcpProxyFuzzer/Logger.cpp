@@ -55,6 +55,7 @@ Logger::~Logger() {
 void Logger::Log(int indent, bool newline, const std::string& message) {
 
     // this is here in debug builds, so that log data is serialized correctly in the log file
+    // this is a GREAT example of RAII, BTW :)
     std::scoped_lock lock(_oneLogWrite);
 
     const auto now = std::chrono::system_clock::now();
