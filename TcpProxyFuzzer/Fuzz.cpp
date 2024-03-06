@@ -71,14 +71,15 @@ RandomNumberGenerator rng{};
 
 #pragma warning(push)
 #pragma warning(disable: 4996) // UTF8 encoding is deprecated, need to fix
-// function that generates a random Unicode character
-std::string getRandomUnicodeCharacter() {
+
+// Generates a random Unicode character
+std::string GetRandomUnicodeCharacter() {
 
 	auto codePoint = rng.range(0x0000,0xFFFF).generate();
 
 	// Avoid surrogate pair range, but recursively generate again if in surrogate pair range
 	if (codePoint >= 0xD800 && codePoint <= 0xDFFF) 
-		return getRandomUnicodeCharacter(); 
+		return GetRandomUnicodeCharacter(); 
 
 	std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
 	return converter.to_bytes(std::wstring(1, gsl::narrow<wchar_t>(codePoint)));
@@ -87,19 +88,66 @@ std::string getRandomUnicodeCharacter() {
 
 // Load a file of naughty strings
 static void LoadNaughtyFile(std::string filename, std::vector<std::string>& words) {
-	std::cout << "\nLoading " << filename << "\n";
+#ifdef _DEBUG
+	gLog.Log(1, false, std::format("Loading %s", filename));
+#endif
 	std::ifstream inputFile(filename, std::ios::in | std::ios::binary);
 	if (inputFile.is_open()) {
 		std::string line;
 		while (std::getline(inputFile, line)) {
-			// Check if the line is non-empty and does not start with #
+			// Check if the line is non-empty and does not start with # (a comment)
 			if (!line.empty() && line.at(0) != '#') {
 				words.push_back(line);
 			}
 		}
 	} else {
-		std::cout << "Error loading " << filename << ", errno " << errno << "\n";
+#ifdef _DEBUG
+		gLog.Log(1, false, std::format("Error loading %s, err=%d", filename, errno));
+#endif
 	}
+}
+
+// gets a naughty string from the appropriate file depending on fuzz_type
+std::string GetNaughtyString(unsigned int fuzz_type) {
+	std::string ret{ };
+	switch (fuzz_type) {
+		case 'j': {
+				const auto len = gsl::narrow_cast<unsigned int>(naughtyJson.size());
+				if (len) {
+					ret = naughtyJson.at(rng.range(0, len).generate());
+				}
+			}
+			break;
+
+		case 't': {
+				const auto len = gsl::narrow_cast<unsigned int>(naughty.size());
+				if (len) {
+					ret = naughty.at(rng.range(0, len).generate());
+				}
+			}
+			break;
+
+		case 'x': {
+				const auto len = gsl::narrow_cast<unsigned int>(naughtyXml.size());
+				if (len) {
+					ret = naughtyXml.at(rng.range(0, len).generate());
+				}
+			}
+			break;
+
+		case 'h': {
+				const auto len = gsl::narrow_cast<unsigned int>(naughtyHtml.size());
+				if (len) {
+					ret = naughtyHtml.at(rng.range(0, len).generate());
+				}
+			}
+			break;
+
+		default:
+			break;
+	}
+
+	return ret;
 }
 
 // This is called multiple times, usually per block of data
@@ -107,7 +155,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 
 	// don't fuzz everything
 	// check data is not too small to fuzz
-	// arbitreay decision, the offset can be no more than 50% of the buffer size
+	// arbitrary decision, the offset can be no more than 50% of the buffer size
 	auto bufflen = buffer.size();
 	if (bufflen < MIN_BUFF_LEN || rng.generatePercent() > fuzzaggr || offset >= bufflen/2) {
 		fprintf(stderr, "Nnn");
@@ -120,45 +168,62 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 	// On first call, load the naughty strings file, but only if fuzz_type is not 'b'
 	// the 'attempted' flag is to prevent trying to load the file
 	// if the file does not exist or there's a load error
-	if (fuzz_type != 'b' && naughty.empty() && !naughtyLoadAttempted) {
+	if (fuzz_type == 't' && naughty.empty() && !naughtyLoadAttempted) {
 		naughtyLoadAttempted = true;
 		LoadNaughtyFile("naughty.txt", naughty);
 	}
 
 	// XML Naughty Strings
-	if ((fuzz_type == 't' || fuzz_type == 'x') && naughtyXml.empty() && !naughtyXmlLoadAttempted) {
+	if (fuzz_type == 'x' && naughtyXml.empty() && !naughtyXmlLoadAttempted) {
 		naughtyXmlLoadAttempted = true;
 		LoadNaughtyFile("naughty_Xml.txt", naughtyXml);
 	}
 
 	// HTML Naughty Strings
-	if ((fuzz_type == 't'|| fuzz_type == 'h') && naughtyHtml.empty() && !naughtyHtmlLoadAttempted) {
+	if (fuzz_type == 'h' && naughtyHtml.empty() && !naughtyHtmlLoadAttempted) {
 		naughtyHtmlLoadAttempted = true;
 		LoadNaughtyFile("naughty_Html.txt", naughtyHtml);
 	}
 
 	// JSON Naughty Strings
-	if ((fuzz_type == 't' || fuzz_type == 'j') && naughtyJson.empty() && !naughtyJsonLoadAttempted) {
+	if (fuzz_type == 'j' && naughtyJson.empty() && !naughtyJsonLoadAttempted) {
 		naughtyJsonLoadAttempted = true;
 		LoadNaughtyFile("naughty_Json.txt", naughtyJson);
 	}
 
-	// get a random range to fuzz, but make sure it's big enough, but not too big!
+	// get a random range to fuzz, make sure it's big enough, but not too big!
 	size_t start{}, start_offset{}, end{ };
 	do {
 		start = rng.range(offset, gsl::narrow_cast<unsigned int>(bufflen - offset)).generate();
 		start_offset = rng.range(0, gsl::narrow_cast<unsigned int>(bufflen)).generate();
-		start_offset >>= 3;
+		start_offset /= 8;
 		start_offset++;
-	} while (start + start_offset >= bufflen); //TODO - double check this won't loop forever!
+	} while (start + start_offset < bufflen); //TODO - double check this won't loop forever!
 
 	end = start + start_offset;
 
-	// if we need to leave the main fuzzing loop
+	// if we need to leave the main fuzzing loop quickly
 	bool earlyExit = false;
 
 	// How many loops through the fuzzer?
-	const auto iterations = gsl::narrow_cast<unsigned int>(rng.generateNormal(5, 2.0, 1, 12));
+	// Use a normal distribution around median (mu) 4.5; std-dev (sigma) 1.5, clamp at 1 and 9
+	// Gives a distribution like this:
+	//  1 *******
+	//	2 ***********************
+	//	3 ****************************************************
+	//	4 ********************************************************************************
+	//	5 **************************************************************************************
+	//	6 ***************************************************
+	//	7 ***********************
+	//	8 *******
+	//	9 *
+	constexpr auto median = 4.5;
+	constexpr auto stddev = 1.5;
+	constexpr auto upperclamp = 9;
+	constexpr auto lowerclamp = 1;
+	
+	const auto iterations = 
+		gsl::narrow_cast<unsigned int>(rng.generateNormal(median, stddev, upperclamp, lowerclamp));
 
 #ifdef _DEBUG
 	gLog.Log(0, false, std::format("Iter:{0}, Start:{1}, End:{2}", iterations, start, end));
@@ -370,7 +435,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 				const size_t fillsize = rng.range(4, 128).generate();
 
 #ifdef _DEBUG
-				gLog.Log(1, false, std::format("Gro->mid: {0}, size{1}", mid, fillsize));
+				gLog.Log(1, false, std::format("Gro->mid: {0}, size: {1}", mid, fillsize));
 #endif
 				// this vector will contain the insertion string, and is set to all-nulls
 				std::vector<char> insert(fillsize);
@@ -379,6 +444,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 						
 					case 'j': 
 					{
+						//TODO Replace with fn()
 						const auto len = gsl::narrow_cast<unsigned int>(naughtyJson.size());
 						if (len) {
 							std::string data = naughtyJson.at(rng.range(0, len).generate());
@@ -496,14 +562,12 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 			// but not if we're doing binary fuzzing
 			case FuzzMutation::NaughtyWord:
 			{
-				if (fuzz_type != 'b' && !naughty.empty()) {
+				if (fuzz_type != 'b') {
 					fprintf(stderr,"Nau");
 #ifdef _DEBUG
 					gLog.Log(1, false, "Nau");
 #endif
-
-					const std::string& nty =
-						naughty.at(rng.range(0, gsl::narrow<unsigned int>(naughty.size())).generate());
+					std::string nty = GetNaughtyString(fuzz_type);
 
 					for (size_t j = start; j < start + nty.size() && j < end; j++) {
 						buffer.at(j) = nty.at(j - start);
@@ -521,7 +585,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 #ifdef _DEBUG
 				gLog.Log(1, false, "Uni");
 #endif
-				auto utf8char = getRandomUnicodeCharacter();
+				auto utf8char = GetRandomUnicodeCharacter();
 				for (unsigned char byte : utf8char) {
 					for (size_t j = start; j < start + utf8char.length() && j < end; j++)
 						buffer.at(j) = byte;

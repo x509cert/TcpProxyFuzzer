@@ -56,7 +56,7 @@ void Logger::Log(int indent, bool newline, const std::string& message) {
 
     // this is here in debug builds, so that log data is serialized correctly in the log file
     // this is a GREAT example of RAII, BTW :)
-    std::scoped_lock lock(_oneLogWrite);
+    std::lock_guard lock(_oneLogWrite);
 
     const auto now = std::chrono::system_clock::now();
     const auto now_time_t = std::chrono::system_clock::to_time_t(now);
@@ -75,7 +75,7 @@ void Logger::Log(int indent, bool newline, const std::string& message) {
 }
 
 void Logger::Log(const int indent, bool newline, const std::vector<char>& buf) {
-    std::stringstream hexStream;
+    std::stringstream hexStream{};
     for (auto byte : buf) {
         hexStream << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(byte);
     }
