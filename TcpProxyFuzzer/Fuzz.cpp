@@ -202,7 +202,8 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 	// get a random range to fuzz, make sure it's big enough, but not too big!
 	size_t start{}, start_offset{}, end{ };
 	do {
-		start = rng.range(offset, gsl::narrow_cast<unsigned int>(bufflen - offset)).generate();
+		auto intermediate = bufflen - gsl::narrow_cast<size_t>(offset);
+		start = rng.range(offset, gsl::narrow_cast<unsigned int>(intermediate)).generate();
 		start_offset = rng.range(0, gsl::narrow_cast<unsigned int>(bufflen)).generate();
 		start_offset /= 8;
 		start_offset++;
