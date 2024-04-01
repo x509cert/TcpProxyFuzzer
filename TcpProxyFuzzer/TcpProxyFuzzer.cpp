@@ -1,8 +1,7 @@
-// A TCP bi-directional proxy that 
-// can act as a bidirectional fuzzer
+// A TCP bi-directional proxy that can act as a bidirectional fuzzer
 // Michael Howard (mikehow@microsoft.com)
 // Azure Database Security
-// Last updated 2/22/2024
+// Last updated 3/31/2024
 
 #define  _WINSOCK_DEPRECATED_NO_WARNINGS 1
 
@@ -27,7 +26,7 @@
 
 #pragma comment(lib, "ws2_32.lib")
 
-constexpr auto VERSION = "1.80";
+constexpr auto VERSION = "1.81";
 constexpr size_t BUFFER_SIZE = 4096;
 
 #ifdef _DEBUG
@@ -184,6 +183,8 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
+#pragma region Threading Code
+
 // this func handles both server->client and client->server
 unsigned __stdcall forward_thread(_In_ void* data) {
     const ConnectionData* connData = static_cast<const ConnectionData*>(data);
@@ -247,6 +248,8 @@ void forward_data(_In_ const ConnectionData* connData) {
     if (bFuzz) 
         fprintf(stderr, "\n");
 }
+
+#pragma endregion Threading Code
 
 #pragma warning (push)
 #pragma warning(disable : 4996) // localtime

@@ -25,10 +25,6 @@
 // https://github.com/microsoft/GSL/blob/main/docs/headers.md#gslspan
 #include "gsl\span" 
 
-#ifdef _DEBUG
-extern Logger gLog;
-#endif
-
 // all the possible fuzz mutation types
 enum class FuzzMutation : uint32_t {
 	None,
@@ -49,10 +45,15 @@ enum class FuzzMutation : uint32_t {
 	Max
 };
 
+#pragma region Globals
+
+#ifdef _DEBUG
+extern Logger gLog;
+#endif
+
 // not going to bother fuzzing a small block
 constexpr size_t MIN_BUFF_LEN = 16;
 
-// some globals
 const std::string interestingChar{ "~!:;\\/,.%-_`$^&#@?+=|\n\r\t\a*<>()[]{}\'\b\v\"\f" };
 
 std::vector<std::string> naughty{};
@@ -68,6 +69,9 @@ std::vector<std::string> naughtyXml{};
 bool naughtyXmlLoadAttempted = false;
 
 RandomNumberGenerator rng{};
+#pragma endregion Globals
+
+#pragma region RNG and Naughty Files
 
 #pragma warning(push)
 #pragma warning(disable: 4996) // UTF8 encoding is deprecated, need to fix
@@ -149,6 +153,10 @@ std::string GetNaughtyString(unsigned int fuzz_type) {
 
 	return ret;
 }
+
+#pragma endregion RNG and Naughty Files
+
+#pragma region Fuzzing
 
 // This is called multiple times, usually per block of data
 bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_type, unsigned int offset) {
@@ -437,12 +445,13 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 #ifdef _DEBUG
 				gLog.Log(1, false, std::format("Gro->mid: {0}, size: {1}", mid, fillsize));
 #endif
-				// this vector will contain the insertion string, and is set to all-nulls
+				// this vector will contain the insertion string, 
+				// it is set to all nulls to start
 				std::vector<char> insert(fillsize);
 
 				switch (fuzz_type) {
 						
-					case 'j': 
+					case 'j': //TODO - need to complete this
 					{
 						//TODO Replace with fn()
 						const auto len = gsl::narrow_cast<unsigned int>(naughtyJson.size());
@@ -457,7 +466,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 					}
 					break;
 
-					case 'x': 
+					case 'x': //TODO - need to complete this
 					{
 						const auto len = gsl::narrow_cast<unsigned int>(naughtyXml.size());
 						if (len) {
@@ -471,7 +480,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 					}
 					break;
 
-					case 'h': 
+					case 'h': //TODO - need to complete this
 					{
 						const auto len = gsl::narrow_cast<unsigned int>(naughtyHtml.size());
 						if (len) {
@@ -610,3 +619,5 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 
 	return true;
 }
+
+#pragma endregion Fuzzing
