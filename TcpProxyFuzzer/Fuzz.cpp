@@ -214,24 +214,20 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 	bool earlyExit = false;
 
 	// How many loops through the fuzzer?
-	// Use a normal distribution around median (mu) 4.5; std-dev (sigma) 1.5, clamp at 1 and 9
+	// Use a poisson distribution around median == 2.5
 	// Gives a distribution like this:
-	//  1 *******
-	//	2 ***********************
-	//	3 ****************************************************
-	//	4 ********************************************************************************
-	//	5 **************************************************************************************
-	//	6 ***************************************************
-	//	7 ***********************
-	//	8 *******
-	//	9 *
-	constexpr auto median = 4.5;
-	constexpr auto stddev = 1.5;
-	constexpr auto upperclamp = 9;
-	constexpr auto lowerclamp = 1;
-	
-	const auto iterations = 
-		gsl::narrow_cast<unsigned int>(rng.generateNormal(median, stddev, upperclamp, lowerclamp));
+	//  0 : ******************************
+	//	1 : **********************************************************************
+	//	2 : *************************************************************************************
+	//	3 : ********************************************************************
+	//	4 : *****************************************
+	//	5 : *********************
+	//	6 : *********
+	//	7 : ***
+	//	8 : *
+
+	constexpr auto mean = 2.5;
+	const auto iterations = gsl::narrow_cast<unsigned int>(rng.generatePoission(mean));
 
 #ifdef _DEBUG
 	gLog.Log(0, false, std::format("Iter:{0}, Start:{1}, End:{2}", iterations, start, end));
@@ -439,11 +435,11 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 
 				// take the midpoint of the start and end, 
 				// and determine how much to grow the buffer
-				const size_t mid = (end - start) / 2;
+				const size_t insert_point = (end - start) / 2;
 				const size_t fillsize = rng.range(4, 128).generate();
 
 #ifdef _DEBUG
-				gLog.Log(1, false, std::format("Gro->mid: {0}, size: {1}", mid, fillsize));
+				gLog.Log(1, false, std::format("Gro->mid: At {0}, size: {1}", insert_point, fillsize));
 #endif
 				// this vector will contain the insertion string, 
 				// it is set to all nulls to start
@@ -472,7 +468,6 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 						if (len) {
 							std::string data = naughtyXml.at(rng.range(0, len).generate());
 							auto replace_size = std::min(data.length(), fillsize);
-							std::copy(data.begin(), data.begin() + replace_size, insert.begin());
 #ifdef _DEBUG
 							gLog.Log(2, false, std::format("Repl Size (X): {0}", replace_size));
 #endif
@@ -486,7 +481,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 						if (len) {
 							std::string data = naughtyHtml.at(rng.range(0, len).generate());
 							auto replace_size = std::min(data.length(), fillsize);
-							std::copy(data.begin(), data.begin() + replace_size, insert.begin());
+							std::copy(data.begin(), data.begin() + replace_size, insert.begin());							
 #ifdef _DEBUG
 							gLog.Log(2, false, std::format("Repl Size (H): {0}", replace_size));
 #endif
@@ -497,6 +492,8 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 					case 'b':
 					default:
 					{
+						// 50% chance to fill with random characters
+						// 50% chance to fill with the same random character
 						if (rng.range(0,10).generate() % 2) {
 							for (char& c : insert)
 								c = rng.generateChar();
@@ -506,11 +503,13 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 								c = r;
 						}
 
+						//TODO
+
 						break;
 					}
 				}
 
-				buffer.insert(buffer.begin() + mid, insert.begin(), insert.end());
+				buffer.insert(buffer.begin() + insert_point, insert.begin(), insert.end());
 				earlyExit = true;
 			}
 			break;

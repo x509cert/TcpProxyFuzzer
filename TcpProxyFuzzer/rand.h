@@ -45,6 +45,11 @@ public:
         return std::clamp(static_cast<int>(std::round(distNormal(gen))), clamp_bottom, clamp_top);
     }
 
+    double generatePoission(double mean) {
+		std::poisson_distribution<> distPoisson(mean);
+		return distPoisson(gen);
+	}
+
 private:
     std::random_device rd;                              // Used to obtain a seed for the random number engine
     std::mt19937 gen;                                   // Mersenne Twister engine
