@@ -117,8 +117,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    SOCKADDR_IN server_addr;
-    memset(&server_addr, 0, sizeof(server_addr));
+    SOCKADDR_IN server_addr{};
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = INADDR_ANY;
     server_addr.sin_port = htons(listen_port);
@@ -156,8 +155,7 @@ int main(int argc, char* argv[]) {
             continue;
         }
 
-        SOCKADDR_IN target_addr;
-        memset(&target_addr, 0, sizeof(target_addr));
+        SOCKADDR_IN target_addr{};
         target_addr.sin_family = AF_INET;
         inet_pton(AF_INET, forward_ip.c_str(), &target_addr.sin_addr);
         target_addr.sin_port = htons(forward_port);
