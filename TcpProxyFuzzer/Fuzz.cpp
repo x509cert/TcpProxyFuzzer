@@ -469,6 +469,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 						if (len) {
 							std::string data = naughtyXml.at(rng.range(0, len).generate());
 							auto replace_size = std::min(data.length(), fillsize);
+							std::copy(data.begin(), data.begin() + replace_size, insert.begin());
 #ifdef _DEBUG
 							gLog.Log(2, false, std::format("Repl Size (X): {0}", replace_size));
 #endif
