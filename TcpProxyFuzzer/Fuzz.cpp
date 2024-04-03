@@ -476,7 +476,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 					}
 					break;
 
-					case 'h': =
+					case 'h': 
 					{
 						const auto len = gsl::narrow_cast<unsigned int>(naughtyHtml.size());
 						if (len) {
