@@ -504,8 +504,6 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 								c = r;
 						}
 
-						//TODO
-
 						break;
 					}
 				}
