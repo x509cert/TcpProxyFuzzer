@@ -424,7 +424,6 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 #ifdef _DEBUG
 				gLog.Log(1, false, std::format("Trn->size: {0}", bufflen));
 #endif
-
 			}
 			break;
 
@@ -448,7 +447,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 
 				switch (fuzz_type) {
 						
-					case 'j': //TODO - need to complete this
+					case 'j': 
 					{
 						//TODO Replace with fn()
 						const auto len = gsl::narrow_cast<unsigned int>(naughtyJson.size());
@@ -463,7 +462,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 					}
 					break;
 
-					case 'x': //TODO - need to complete this
+					case 'x': 
 					{
 						const auto len = gsl::narrow_cast<unsigned int>(naughtyXml.size());
 						if (len) {
@@ -477,7 +476,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 					}
 					break;
 
-					case 'h': //TODO - need to complete this
+					case 'h': =
 					{
 						const auto len = gsl::narrow_cast<unsigned int>(naughtyHtml.size());
 						if (len) {
