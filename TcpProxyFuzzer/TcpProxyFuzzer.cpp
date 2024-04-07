@@ -26,7 +26,8 @@
 
 #pragma comment(lib, "ws2_32.lib")
 
-constexpr auto VERSION = "1.81";
+constexpr auto VERSION = "1.90";
+constexpr auto AUTHOR = "Michael Howard (Azure Data Security)";
 constexpr size_t BUFFER_SIZE = 4096;
 
 #ifdef _DEBUG
@@ -53,6 +54,7 @@ typedef struct {
 } ConnectionData;
 
 // forward decls
+void PrintLogo();
 std::string getCurrentTimeAsString();
 void forward_data(_In_ const ConnectionData*);
 unsigned __stdcall forward_thread(_In_  void*);
@@ -137,7 +139,8 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    fprintf(stdout, "TcpProxyFuzzer %s\n", VERSION);
+    PrintLogo();
+    fprintf(stdout, "\nTcpProxyFuzzer %s\n%s\n\n", VERSION, AUTHOR);
     fprintf(stdout, "Proxying from port %u -> %s:%u\n", 
         listen_port, forward_ip.c_str(), forward_port);
 

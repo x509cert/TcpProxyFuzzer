@@ -144,6 +144,7 @@
   <ItemGroup>
     <ClCompile Include="Fuzz.cpp" />
     <ClCompile Include="Logger.cpp" />
+    <ClCompile Include="Logo.cpp" />
     <ClCompile Include="PseudoLoc.cpp" />
     <ClCompile Include="rand.h" />
     <ClCompile Include="TcpProxyFuzzer.cpp" />
