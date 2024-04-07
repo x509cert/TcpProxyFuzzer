@@ -1,7 +1,7 @@
 #include <string>
 #include <array>
 
-std::array<std::string,6> logo { 
+static std::array<std::string,6> logo { 
 R"(                                                          
  _____         _____                 _____                     
 |_   _|___ ___|  _  |___ ___ _ _ _ _|   __|_ _ ___ ___ ___ ___ 
