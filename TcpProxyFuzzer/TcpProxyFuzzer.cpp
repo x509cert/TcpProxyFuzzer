@@ -26,7 +26,7 @@
 
 #pragma comment(lib, "ws2_32.lib")
 
-constexpr auto VERSION = "1.90";
+constexpr auto VERSION = "1.91";
 constexpr auto AUTHOR = "Michael Howard (Azure Data Security)";
 constexpr size_t BUFFER_SIZE = 4096;
 

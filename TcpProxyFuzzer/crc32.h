@@ -24,8 +24,8 @@ public:
         if (buf.empty()) return 0;
 
         uint32_t crc = 0xFFFFFFFF;
-        for (size_t i = 0; i < buf.size(); i++) {
-            const uint8_t index = gsl::narrow_cast<uint8_t>(crc ^ gsl::at(buf,i));
+        for (const auto& byte : buf) { 
+            const uint8_t index = gsl::narrow_cast<uint8_t>(crc ^ static_cast<uint8_t>(byte));
             crc = (crc >> 8) ^ gsl::at(_crc_table, index);
         }
         return ~crc;

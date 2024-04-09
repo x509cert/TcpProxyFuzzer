@@ -362,7 +362,7 @@ bool Fuzz(std::vector<char>& buffer, unsigned int fuzzaggr, unsigned int fuzz_ty
 #ifdef _DEBUG
 				gLog.Log(1, false, "Num");
 #endif
-				const int interestingNum[] 
+				const unsigned char interestingNum[] 
 					= { 0,1,2,3,4,5,7,8,9,15,16,17,31,32,
 						33,63,64,65,127,128,129,191,192,193,
 						223,224,225,239,240,241,247,248,249,253,
